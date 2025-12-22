@@ -179,7 +179,7 @@ const Layout = ({ children }) => {
                                 >
                                     {user?.profilePhoto ? (
                                         <img
-                                            src={`http://localhost:5000${user.profilePhoto}`}
+                                            src={`${import.meta.env.VITE_API_URL}${user.profilePhoto}`}
                                             alt={user?.name}
                                             className="h-8 w-8 rounded-full object-cover border border-gray-200"
                                         />
@@ -269,7 +269,7 @@ const Layout = ({ children }) => {
                                 <div className="flex items-center">
                                     {user?.profilePhoto ? (
                                         <img
-                                            src={`http://localhost:5000${user.profilePhoto}`}
+                                            src={`${import.meta.env.VITE_API_URL}${user.profilePhoto}`}
                                             alt={user?.name}
                                             className="h-10 w-10 rounded-full object-cover border border-gray-200"
                                         />

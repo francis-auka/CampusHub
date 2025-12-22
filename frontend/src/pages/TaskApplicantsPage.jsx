@@ -84,8 +84,8 @@ const TaskApplicantsPage = () => {
                 <h1 className="text-3xl font-bold text-gray-900 mt-2">{task.title}</h1>
                 <div className="mt-4 flex items-center space-x-4 text-sm text-gray-600">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${task.status === 'open' ? 'bg-green-100 text-green-800' :
-                            task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                                'bg-gray-100 text-gray-800'
+                        task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
                         }`}>
                         {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                     </span>
@@ -118,7 +118,7 @@ const TaskApplicantsPage = () => {
                                         <div className="flex-shrink-0">
                                             {application.applicant?.profilePhoto ? (
                                                 <img
-                                                    src={`http://localhost:5000${application.applicant.profilePhoto}`}
+                                                    src={`${import.meta.env.VITE_API_URL}${application.applicant.profilePhoto}`}
                                                     alt={application.applicant.name}
                                                     className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
                                                 />
@@ -144,8 +144,8 @@ const TaskApplicantsPage = () => {
                                                     </p>
                                                 </div>
                                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${application.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                                                        application.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                            'bg-yellow-100 text-yellow-800'
+                                                    application.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                        'bg-yellow-100 text-yellow-800'
                                                     }`}>
                                                     {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                                                 </span>

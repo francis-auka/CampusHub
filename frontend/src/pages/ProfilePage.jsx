@@ -34,7 +34,7 @@ const ProfilePage = () => {
                 company: user.company || ''
             });
             if (user.profilePhoto) {
-                setPreviewUrl(`http://localhost:5000${user.profilePhoto}`);
+                setPreviewUrl(`${import.meta.env.VITE_API_URL}${user.profilePhoto}`);
             }
         }
     }, [user]);
