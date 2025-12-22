@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { NotificationContext } from '../contexts/NotificationContext';
-import api from '../utils/api';
+import api, { API_URL } from '../utils/api';
 
 const ProfilePage = () => {
     const { user, logout, refreshUser } = useContext(AuthContext);
@@ -34,7 +34,7 @@ const ProfilePage = () => {
                 company: user.company || ''
             });
             if (user.profilePhoto) {
-                setPreviewUrl(`${import.meta.env.VITE_API_URL}${user.profilePhoto}`);
+                setPreviewUrl(`${API_URL}${user.profilePhoto}`);
             }
         }
     }, [user]);

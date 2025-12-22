@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import api from '../utils/api';
+import api, { API_URL } from '../utils/api';
 
 const TaskApplicantsPage = () => {
     const { id } = useParams();
@@ -118,7 +118,7 @@ const TaskApplicantsPage = () => {
                                         <div className="flex-shrink-0">
                                             {application.applicant?.profilePhoto ? (
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL}${application.applicant.profilePhoto}`}
+                                                    src={`${API_URL}${application.applicant.profilePhoto}`}
                                                     alt={application.applicant.name}
                                                     className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
                                                 />
