@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+  
+  body {
+    @apply m-0 font-sans text-gray-900 bg-gray-50;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn-primary {
+    @apply bg-primary-500 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:bg-primary-600 hover:shadow-lg active:transform active:translate-y-px disabled:bg-gray-300 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply bg-transparent text-primary-500 px-6 py-3 rounded-lg font-semibold border-2 border-primary-500 transition-all duration-200 hover:bg-primary-50;
+  }
+  
+  .btn-ghost {
+    @apply bg-transparent text-gray-600 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-gray-100 hover:text-gray-900;
+  }
+  
+  /* Card Components */
+  .card {
+    @apply bg-white rounded-card p-5 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+  
+  .task-card {
+    @apply bg-white rounded-card p-5 shadow-card border-l-4 border-primary-500 transition-all duration-300 hover:shadow-card-hover hover:border-primary-600;
+  }
+  
+  /* Input Components */
+  .input {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-lg text-sm text-gray-900 transition-all duration-200 focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-100 placeholder:text-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed;
+  }
+  
+  /* Tag/Badge Components */
+  .tag {
+    @apply inline-flex items-center px-3 py-1.5 bg-primary-100 text-primary-600 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold uppercase tracking-wide;
+  }
+  
+  .badge-warning {
+    @apply px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold uppercase tracking-wide;
+  }
+  
+  .badge-error {
+    @apply px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-semibold uppercase tracking-wide;
+  }
+}
