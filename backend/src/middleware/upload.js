@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 // Check file type
 function checkFileType(file, cb) {
     // Allowed ext
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
     // Check ext
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     // Check mime
@@ -21,14 +21,14 @@ function checkFileType(file, cb) {
     if (mimetype && extname) {
         return cb(null, true);
     } else {
-        cb('Error: Images Only!');
+        cb('Error: Images and Documents (PDF, DOC) Only!');
     }
 }
 
 // Init upload
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1000000 }, // 1MB limit
+    limits: { fileSize: 5000000 }, // 5MB limit
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     }

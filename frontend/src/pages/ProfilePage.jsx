@@ -76,6 +76,12 @@ const ProfilePage = () => {
             if (formData.company) formDataToSend.append('company', formData.company);
             if (profilePhoto) formDataToSend.append('profilePhoto', profilePhoto);
 
+            // Handle resume upload
+            const resumeInput = document.querySelector('input[name="resume"]');
+            if (resumeInput && resumeInput.files[0]) {
+                formDataToSend.append('resume', resumeInput.files[0]);
+            }
+
             const response = await api.put('/auth/updatedetails', formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -186,6 +192,22 @@ const ProfilePage = () => {
                                             <span className="text-gray-500 block">Role</span>
                                             <span className="text-gray-900 capitalize">{user?.role}</span>
                                         </div>
+                                        {user?.resume && (
+                                            <div className="md:col-span-2">
+                                                <span className="text-gray-500 block">Resume / Portfolio</span>
+                                                <a
+                                                    href={`${API_URL}${user.resume}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                                                >
+                                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    View Resume
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -275,6 +297,21 @@ const ProfilePage = () => {
                                             className="input"
                                             placeholder="React, Node.js, Design..."
                                         />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="label">Resume / Portfolio (PDF, DOC)</label>
+                                        <input
+                                            type="file"
+                                            name="resume"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={handleFileChange}
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        />
+                                        {user?.resume && (
+                                            <p className="mt-2 text-sm text-gray-500">
+                                                Current: <a href={`${API_URL}${user.resume}`} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">View Resume</a>
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 

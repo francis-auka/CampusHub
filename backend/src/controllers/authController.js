@@ -14,7 +14,9 @@ const generateToken = (id) => {
 const register = async (req, res) => {
     try {
         console.log('Register request body:', req.body);
-        const { name, email, password, role, university, company } = req.body;
+        console.log('Register request files:', req.files);
+
+        const { name, email, password, role, university, company, bio, skills } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -29,7 +31,23 @@ const register = async (req, res) => {
             email,
             password,
             role,
+            bio,
         };
+
+        // Handle skills (parse if string)
+        if (skills) {
+            userData.skills = typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : skills;
+        }
+
+        // Handle file uploads
+        if (req.files) {
+            if (req.files.profilePhoto) {
+                userData.profilePhoto = `/uploads/${req.files.profilePhoto[0].filename}`;
+            }
+            if (req.files.resume) {
+                userData.resume = `/uploads/${req.files.resume[0].filename}`;
+            }
+        }
 
         // Add role-specific fields
         if (role === 'student') {
@@ -107,8 +125,13 @@ const updateDetails = async (req, res) => {
             company: req.body.company
         };
 
-        if (req.file) {
-            fieldsToUpdate.profilePhoto = `/uploads/${req.file.filename}`;
+        if (req.files) {
+            if (req.files.profilePhoto) {
+                fieldsToUpdate.profilePhoto = `/uploads/${req.files.profilePhoto[0].filename}`;
+            }
+            if (req.files.resume) {
+                fieldsToUpdate.resume = `/uploads/${req.files.resume[0].filename}`;
+            }
         }
 
         const user = await User.findByIdAndUpdate(req.user._id, fieldsToUpdate, {

@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema({
         default: '',
     },
     bio: String,
+    resume: String, // Path to resume file
     phone: String,
     isVerified: {
         type: Boolean,

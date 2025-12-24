@@ -4,9 +4,15 @@ const { register, login, getMe, updateDetails } = require('../controllers/authCo
 const { protect } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-router.post('/register', register);
+router.post('/register', upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'resume', maxCount: 1 }
+]), register);
 router.post('/login', login);
 router.get('/me', protect, getMe);
-router.put('/updatedetails', protect, upload.single('profilePhoto'), updateDetails);
+router.put('/updatedetails', protect, upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'resume', maxCount: 1 }
+]), updateDetails);
 
 module.exports = router;

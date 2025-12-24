@@ -11,6 +11,12 @@ const RegisterPage = () => {
         confirmPassword: '',
         university: '',
         company: '',
+        bio: '',
+        skills: '',
+    });
+    const [files, setFiles] = useState({
+        profilePhoto: null,
+        resume: null
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -36,22 +42,29 @@ const RegisterPage = () => {
 
         setLoading(true);
 
-        const userData = {
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            role,
-        };
+        const data = new FormData();
+        data.append('name', formData.name);
+        data.append('email', formData.email);
+        data.append('password', formData.password);
+        data.append('role', role);
+        data.append('bio', formData.bio);
+        data.append('skills', formData.skills);
 
-        // Add role-specific fields
         if (role === 'student') {
-            userData.university = formData.university;
+            data.append('university', formData.university);
         } else {
-            userData.company = formData.company;
+            data.append('company', formData.company);
         }
 
-        console.log('Registering user:', userData);
-        const result = await register(userData);
+        if (files.profilePhoto) {
+            data.append('profilePhoto', files.profilePhoto);
+        }
+        if (files.resume) {
+            data.append('resume', files.resume);
+        }
+
+        console.log('Registering user...');
+        const result = await register(data); // AuthContext register needs to handle FormData
         console.log('Registration result:', result);
 
         if (result.success) {
@@ -74,6 +87,13 @@ const RegisterPage = () => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleFileChange = (e) => {
+        setFiles({
+            ...files,
+            [e.target.name]: e.target.files[0]
         });
     };
 
@@ -244,6 +264,65 @@ const RegisterPage = () => {
                                 placeholder="••••••••"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
+                            />
+                        </div>
+
+                        {/* New Fields */}
+                        <div>
+                            <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+                                Bio
+                            </label>
+                            <textarea
+                                id="bio"
+                                name="bio"
+                                rows="3"
+                                className="input"
+                                placeholder="Tell us about yourself..."
+                                value={formData.bio}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="skills" className="block text-sm font-medium text-gray-700 mb-2">
+                                Skills (comma separated)
+                            </label>
+                            <input
+                                id="skills"
+                                name="skills"
+                                type="text"
+                                className="input"
+                                placeholder="React, Node.js, Design..."
+                                value={formData.skills}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 mb-2">
+                                Profile Photo
+                            </label>
+                            <input
+                                id="profilePhoto"
+                                name="profilePhoto"
+                                type="file"
+                                accept="image/*"
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
+                                Resume / Portfolio (PDF, DOC)
+                            </label>
+                            <input
+                                id="resume"
+                                name="resume"
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                onChange={handleFileChange}
                             />
                         </div>
 
