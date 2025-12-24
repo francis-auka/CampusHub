@@ -178,16 +178,30 @@ const Layout = ({ children }) => {
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                                     className="flex items-center max-w-xs bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                                 >
-                                    {user?.profilePhoto ? (
-                                        <img
-                                            src={`${API_URL}${user.profilePhoto}`}
-                                            alt={user?.name}
-                                            className="h-8 w-8 rounded-full object-cover border border-gray-200"
-                                        />
+                                    {user?.role === 'student' ? (
+                                        user?.profilePhoto ? (
+                                            <img
+                                                src={`${API_URL}${user.profilePhoto}`}
+                                                alt={user?.name}
+                                                className="h-8 w-8 rounded-full object-cover border border-gray-200"
+                                            />
+                                        ) : (
+                                            <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-gray-200">
+                                                {user?.name?.charAt(0).toUpperCase()}
+                                            </div>
+                                        )
                                     ) : (
-                                        <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-gray-200">
-                                            {user?.name?.charAt(0).toUpperCase()}
-                                        </div>
+                                        user?.businessLogo ? (
+                                            <img
+                                                src={`${API_URL}${user.businessLogo}`}
+                                                alt={user?.company}
+                                                className="h-8 w-8 rounded-full object-cover border border-gray-200"
+                                            />
+                                        ) : (
+                                            <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-gray-200">
+                                                {user?.company?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase()}
+                                            </div>
+                                        )
                                     )}
                                     <ChevronDown size={16} className="ml-1 text-gray-400 hidden sm:block" />
                                 </button>

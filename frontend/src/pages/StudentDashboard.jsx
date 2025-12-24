@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import api from '../utils/api';
+import api, { API_URL } from '../utils/api';
 
 const StudentDashboard = () => {
     const { user, logout } = useContext(AuthContext);
@@ -108,9 +108,17 @@ const StudentDashboard = () => {
                                 </svg>
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                             </button>
-                            <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
-                                {user?.name?.charAt(0).toUpperCase()}
-                            </div>
+                            {user?.profilePhoto ? (
+                                <img
+                                    src={`${API_URL}${user.profilePhoto}`}
+                                    alt={user?.name}
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                                />
+                            ) : (
+                                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
+                                    {user?.name?.charAt(0).toUpperCase()}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>

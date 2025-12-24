@@ -265,7 +265,8 @@ const getTaskApplicants = async (req, res) => {
         }
 
         // Check ownership
-        if (task.postedBy._id.toString() !== req.user._id.toString()) {
+        const postedById = task.postedBy._id ? task.postedBy._id.toString() : task.postedBy.toString();
+        if (postedById !== req.user._id.toString()) {
             return res.status(403).json({ message: 'Not authorized to view applicants for this task' });
         }
 
@@ -314,7 +315,8 @@ const assignTask = async (req, res) => {
         const { studentId } = req.body;
 
         // Check if student applied
-        if (!task.applicants.includes(studentId)) {
+        const hasApplied = task.applicants.some(id => id.toString() === studentId);
+        if (!hasApplied) {
             return res.status(400).json({ message: 'Student has not applied for this task' });
         }
 

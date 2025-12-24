@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../utils/api';
+import api, { API_URL } from '../utils/api';
 import { Link } from 'react-router-dom';
 
 const TaskBrowsingPage = () => {
@@ -207,16 +207,32 @@ const TaskBrowsingPage = () => {
                                 {tasks.map(task => (
                                     <div key={task._id} className="task-card hover:cursor-pointer">
                                         <div className="flex justify-between items-start mb-3">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <h3 className="text-lg font-semibold text-gray-900">
-                                                        {task.title}
-                                                    </h3>
-                                                    <span className="badge-success">{task.type}</span>
+                                            <div className="flex items-center gap-4 flex-1">
+                                                {/* Company Logo */}
+                                                <div className="flex-shrink-0">
+                                                    {task.postedBy?.businessLogo ? (
+                                                        <img
+                                                            src={`${API_URL}${task.postedBy.businessLogo}`}
+                                                            alt={task.postedBy.company}
+                                                            className="h-12 w-12 rounded-lg object-cover border border-gray-100"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-12 w-12 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-lg">
+                                                            {task.postedBy?.company?.charAt(0).toUpperCase() || 'C'}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <p className="text-sm text-gray-600">
-                                                    {task.postedBy?.company || 'Company Name'}
-                                                </p>
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h3 className="text-lg font-semibold text-gray-900">
+                                                            {task.title}
+                                                        </h3>
+                                                        <span className="badge-success">{task.type}</span>
+                                                    </div>
+                                                    <p className="text-sm text-gray-600">
+                                                        {task.postedBy?.company || 'Company Name'}
+                                                    </p>
+                                                </div>
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-2xl font-bold text-primary-600">
