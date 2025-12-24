@@ -60,4 +60,17 @@
   .badge-error {
     @apply px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-semibold uppercase tracking-wide;
   }
+
+  /* Responsive Utilities */
+  .mobile-only {
+    @apply block md:hidden;
+  }
+  
+  .desktop-only {
+    @apply hidden md:block;
+  }
+
+  .responsive-table-container {
+    @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
 }

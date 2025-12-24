@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
 import AnimatedBackground from '../components/AnimatedBackground';
 
 const LandingPage = () => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
     const fadeInUp = {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
@@ -20,13 +24,13 @@ const LandingPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 overflow-x-hidden relative">
             {/* Hero Background Image with Overlay */}
-            <div className="absolute inset-0 z-0 h-[600px] md:h-[700px]">
+            <div className="absolute inset-0 z-0 h-[500px] md:h-[700px]">
                 <img
                     src="/hero-bg.png"
                     alt="Campus Hub Background"
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-gray-50"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-gray-50"></div>
             </div>
 
             {/* Header */}
@@ -34,43 +38,77 @@ const LandingPage = () => {
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm"
+                className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm"
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                            <img src="/logo.png" alt="Campus Hub Logo" className="h-10 w-auto" />
-                            <span className="ml-2 text-2xl font-bold text-primary-600">Campus Hub</span>
+                            <img src="/logo.png" alt="Campus Hub Logo" className="h-8 md:h-10 w-auto" />
+                            <span className="ml-2 text-xl md:text-2xl font-bold text-primary-600">Campus Hub</span>
                         </div>
+
+                        {/* Desktop Nav */}
                         <nav className="hidden md:flex space-x-8">
                             <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Features</a>
                             <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">How It Works</a>
                             <a href="#about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
                         </nav>
-                        <div className="flex space-x-4">
-                            <Link to="/login" className="btn-ghost">Sign In</Link>
-                            <Link to="/register" className="btn-primary">Get Started</Link>
+
+                        <div className="hidden md:flex items-center space-x-4">
+                            <Link to="/login" className="btn-ghost py-2 px-4">Sign In</Link>
+                            <Link to="/register" className="btn-primary py-2 px-6">Get Started</Link>
                         </div>
+
+                        {/* Mobile Menu Button */}
+                        <button
+                            className="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                        </button>
                     </div>
                 </div>
+
+                {/* Mobile Navigation Menu */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="md:hidden bg-white border-b border-gray-100 overflow-hidden"
+                        >
+                            <div className="px-4 pt-2 pb-6 space-y-2">
+                                <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-4 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg">Features</a>
+                                <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-4 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg">How It Works</a>
+                                <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-4 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg">About</a>
+                                <div className="pt-4 flex flex-col gap-3">
+                                    <Link to="/login" className="btn-ghost w-full text-center py-3">Sign In</Link>
+                                    <Link to="/register" className="btn-primary w-full text-center py-3">Get Started</Link>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </motion.header>
 
             {/* Hero Section */}
-            <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+            <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-32">
                 <div className="text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg"
+                        className="text-4xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg leading-tight"
                     >
-                        Campus Hub: <span className="text-primary-400">Student Freelance Marketplace</span>
+                        Campus Hub: <br className="md:hidden" />
+                        <span className="text-primary-400">Student Freelance Marketplace</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-xl md:text-2xl text-gray-100 mb-10 max-w-3xl mx-auto drop-shadow-md"
+                        className="text-lg md:text-2xl text-gray-100 mb-10 max-w-3xl mx-auto drop-shadow-md px-4"
                     >
                         Connect students with MSMEs for tasks, internships, and real-world experience.
                         Build your portfolio while earning and gaining valuable skills.
@@ -79,7 +117,7 @@ const LandingPage = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-col sm:flex-row justify-center gap-6"
+                        className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 px-4"
                     >
                         <Link to="/register" className="btn-primary text-lg px-10 py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
                             Hire a Student
@@ -96,7 +134,7 @@ const LandingPage = () => {
                     whileInView="animate"
                     viewport={{ once: true }}
                     variants={staggerContainer}
-                    className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
+                    className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8"
                 >
                     {[
                         { number: "1000+", label: "Active Students" },
@@ -108,8 +146,8 @@ const LandingPage = () => {
                             variants={fadeInUp}
                             className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                         >
-                            <div className="text-4xl font-bold text-primary-600 mb-2">{stat.number}</div>
-                            <div className="text-gray-600 font-medium">{stat.label}</div>
+                            <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-1 md:mb-2">{stat.number}</div>
+                            <div className="text-gray-600 font-medium text-sm md:text-base">{stat.label}</div>
                         </motion.div>
                     ))}
                 </motion.div>

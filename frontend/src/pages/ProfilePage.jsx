@@ -128,20 +128,20 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-lg shadow-card overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+            <div className="bg-white rounded-xl shadow-card overflow-hidden">
                 {/* Header / Cover */}
-                <div className="h-32 bg-gradient-to-r from-primary-500 to-primary-600"></div>
+                <div className="h-32 md:h-48 bg-gradient-to-r from-primary-500 to-primary-600"></div>
 
-                <div className="px-8 pb-8">
+                <div className="px-4 md:px-8 pb-6 md:pb-8">
                     {/* Avatar & Actions */}
-                    <div className="relative flex justify-between items-end -mt-12 mb-6">
-                        <div className="w-24 h-24 bg-white rounded-full p-1 shadow-lg relative group">
+                    <div className="relative flex flex-col sm:flex-row justify-between items-center sm:items-end -mt-12 md:-mt-16 mb-6 gap-4">
+                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full p-1 shadow-lg relative group">
                             {user?.role === 'student' ? (
                                 previews.profilePhoto ? (
                                     <img src={previews.profilePhoto} alt="Profile" className="w-full h-full rounded-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold text-3xl">
+                                    <div className="w-full h-full bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold text-2xl md:text-3xl">
                                         {user?.name?.charAt(0).toUpperCase()}
                                     </div>
                                 )
@@ -149,7 +149,7 @@ const ProfilePage = () => {
                                 previews.businessLogo ? (
                                     <img src={previews.businessLogo} alt="Logo" className="w-full h-full rounded-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold text-3xl">
+                                    <div className="w-full h-full bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold text-2xl md:text-3xl">
                                         {user?.company?.charAt(0).toUpperCase()}
                                     </div>
                                 )
@@ -157,7 +157,7 @@ const ProfilePage = () => {
 
                             {isEditing && (
                                 <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                                    <span className="text-white text-xs font-medium">Change</span>
+                                    <span className="text-white text-[10px] md:text-xs font-medium">Change</span>
                                     <input
                                         type="file"
                                         name={user?.role === 'student' ? 'profilePhoto' : 'businessLogo'}
@@ -168,11 +168,11 @@ const ProfilePage = () => {
                                 </label>
                             )}
                         </div>
-                        <div className="flex space-x-3 mb-2">
+                        <div className="flex space-x-3">
                             {!isEditing ? (
-                                <button onClick={() => setIsEditing(true)} className="btn-secondary text-sm">Edit Profile</button>
+                                <button onClick={() => setIsEditing(true)} className="btn-secondary py-2 px-4 text-xs md:text-sm">Edit Profile</button>
                             ) : (
-                                <button onClick={() => setIsEditing(false)} className="btn-ghost text-sm">Cancel</button>
+                                <button onClick={() => setIsEditing(false)} className="btn-ghost py-2 px-4 text-xs md:text-sm">Cancel</button>
                             )}
                         </div>
                     </div>
@@ -181,16 +181,16 @@ const ProfilePage = () => {
                     <div className="space-y-6">
                         {!isEditing ? (
                             // View Mode
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">
+                            <div className="text-center sm:text-left">
+                                <h1 className="text-xl md:text-2xl font-bold text-gray-900">
                                     {user?.role === 'student' ? user?.name : user?.company}
                                 </h1>
-                                <p className="text-gray-600 font-medium">
+                                <p className="text-sm md:text-base text-gray-600 font-medium">
                                     {user?.role === 'student' ? user?.university : user?.businessCategory}
                                 </p>
 
                                 {user?.role === 'msme' && user?.location && (
-                                    <p className="text-sm text-gray-500 mt-1 flex items-center">
+                                    <p className="text-xs md:text-sm text-gray-500 mt-1 flex items-center justify-center sm:justify-start">
                                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -199,8 +199,8 @@ const ProfilePage = () => {
                                     </p>
                                 )}
 
-                                <div className="mt-4 prose prose-sm text-gray-500">
-                                    <p>{user?.role === 'student' ? (user?.bio || 'No bio added yet.') : (user?.businessDescription || 'No business description added yet.')}</p>
+                                <div className="mt-4 prose prose-sm text-gray-500 max-w-none">
+                                    <p className="text-sm md:text-base">{user?.role === 'student' ? (user?.bio || 'No bio added yet.') : (user?.businessDescription || 'No business description added yet.')}</p>
                                 </div>
 
                                 <div className="mt-6">

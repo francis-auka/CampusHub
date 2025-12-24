@@ -13,6 +13,8 @@ const TaskBrowsingPage = () => {
     const [selectedType, setSelectedType] = useState([]);
     const [budgetRange, setBudgetRange] = useState({ min: 0, max: 1000 });
 
+    const [showFilters, setShowFilters] = useState(false);
+
     const categories = ['All', 'Web Development', 'Marketing', 'Design', 'Data Entry', 'Software Development'];
     const taskTypes = [
         { label: 'Micro Task', value: 'micro-task' },
@@ -76,18 +78,31 @@ const TaskBrowsingPage = () => {
             <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex justify-between items-center">
-                        <Link to="/" className="text-2xl font-bold text-primary-600">Campus Hub</Link>
+                        <Link to="/" className="text-xl md:text-2xl font-bold text-primary-600">Campus Hub</Link>
                         <div className="flex items-center space-x-4">
-                            <Link to="/dashboard/student" className="btn-ghost">Dashboard</Link>
+                            <Link to="/dashboard/student" className="btn-ghost py-2 px-3 text-sm md:text-base">Dashboard</Link>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+                {/* Mobile Filter Toggle */}
+                <div className="lg:hidden mb-4">
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="w-full flex items-center justify-center gap-2 bg-white p-3 rounded-lg border border-gray-200 font-medium text-gray-700 shadow-sm"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        {showFilters ? 'Hide Filters' : 'Show Filters'}
+                    </button>
+                </div>
+
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Filters Sidebar */}
-                    <aside className="lg:w-64 flex-shrink-0">
+                    <aside className={`lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
                         <div className="bg-white rounded-lg shadow-card p-6 sticky top-24">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
 
@@ -151,8 +166,9 @@ const TaskBrowsingPage = () => {
                                     setSelectedType([]);
                                     setBudgetRange({ min: 0, max: 1000 });
                                     setSearchQuery('');
+                                    setShowFilters(false);
                                 }}
-                                className="btn-secondary w-full text-sm"
+                                className="btn-secondary w-full text-sm py-2"
                             >
                                 Clear Filters
                             </button>
@@ -206,56 +222,61 @@ const TaskBrowsingPage = () => {
                             <div className="grid grid-cols-1 gap-6">
                                 {tasks.map(task => (
                                     <div key={task._id} className="task-card hover:cursor-pointer">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div className="flex items-center gap-4 flex-1">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                                            <div className="flex items-center gap-3 md:gap-4 flex-1">
                                                 {/* Company Logo */}
                                                 <div className="flex-shrink-0">
                                                     {task.postedBy?.businessLogo ? (
                                                         <img
                                                             src={`${API_URL}${task.postedBy.businessLogo}`}
                                                             alt={task.postedBy.company}
-                                                            className="h-12 w-12 rounded-lg object-cover border border-gray-100"
+                                                            className="h-10 w-10 md:h-12 md:w-12 rounded-lg object-cover border border-gray-100"
                                                         />
                                                     ) : (
-                                                        <div className="h-12 w-12 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-lg">
+                                                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 font-bold text-base md:text-lg">
                                                             {task.postedBy?.company?.charAt(0).toUpperCase() || 'C'}
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <h3 className="text-lg font-semibold text-gray-900">
+                                                <div className="min-w-0">
+                                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                        <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate max-w-[200px] sm:max-w-none">
                                                             {task.title}
                                                         </h3>
-                                                        <span className="badge-success">{task.type}</span>
+                                                        <span className="badge-success text-[10px] md:text-xs">{task.type}</span>
                                                     </div>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-xs md:text-sm text-gray-600 truncate">
                                                         {task.postedBy?.company || 'Company Name'}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <div className="text-2xl font-bold text-primary-600">
+                                            <div className="sm:text-right w-full sm:w-auto flex sm:block justify-between items-center">
+                                                <div className="text-xl md:text-2xl font-bold text-primary-600">
                                                     ${task.budget}
+                                                </div>
+                                                <div className="sm:hidden">
+                                                    <span className="text-xs text-gray-500">
+                                                        Due: {new Date(task.deadline).toLocaleDateString()}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <p className="text-gray-700 mb-4 line-clamp-2">
+                                        <p className="text-sm md:text-base text-gray-700 mb-4 line-clamp-2">
                                             {task.description}
                                         </p>
 
                                         <div className="flex flex-wrap gap-2 mb-4">
                                             {task.skills.map(skill => (
-                                                <span key={skill} className="tag">
+                                                <span key={skill} className="tag text-[10px] md:text-xs py-1 px-2">
                                                     {skill}
                                                 </span>
                                             ))}
                                         </div>
 
-                                        <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                                <span className="flex items-center">
+                                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200">
+                                            <div className="flex items-center space-x-4 text-xs md:text-sm text-gray-500 w-full sm:w-auto">
+                                                <span className="hidden sm:flex items-center">
                                                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                     </svg>
@@ -270,7 +291,7 @@ const TaskBrowsingPage = () => {
                                             </div>
                                             <button
                                                 onClick={() => handleApply(task._id)}
-                                                className="btn-primary"
+                                                className="btn-primary w-full sm:w-auto py-2 px-6 text-sm md:text-base"
                                             >
                                                 Apply Now
                                             </button>

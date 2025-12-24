@@ -95,8 +95,8 @@ const Layout = ({ children }) => {
                                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                             </button>
                             <Link to="/" className="flex items-center gap-2">
-                                <img src="/logo.png" alt="Campus Hub Logo" className="h-8 w-auto" />
-                                <span className="text-xl font-bold text-gray-900 hidden sm:block">Campus Hub</span>
+                                <img src="/logo.png" alt="Campus Hub Logo" className="h-6 md:h-8 w-auto" />
+                                <span className="text-lg md:text-xl font-bold text-gray-900 hidden xs:block">Campus Hub</span>
                             </Link>
                         </div>
 
@@ -306,7 +306,7 @@ const Layout = ({ children }) => {
 
             {/* Main Content */}
             <main className="flex-1 relative z-0 overflow-y-auto focus:outline-none">
-                <div className="py-6">
+                <div className="py-4 md:py-6">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {children}
                     </div>

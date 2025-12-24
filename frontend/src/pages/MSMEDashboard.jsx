@@ -50,29 +50,29 @@ const MSMEDashboard = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                            <Link to="/" className="text-2xl font-bold text-primary-600">Campus Hub</Link>
-                            <span className="ml-4 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+                            <Link to="/" className="text-xl md:text-2xl font-bold text-primary-600">Campus Hub</Link>
+                            <span className="ml-2 md:ml-4 px-2 md:px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-[10px] md:text-sm font-medium whitespace-nowrap">
                                 MSME Dashboard
                             </span>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3 md:space-x-4">
                             <div className="flex items-center">
-                                <span className="text-gray-700 font-medium mr-2">{user?.company || user?.name}</span>
+                                <span className="text-gray-700 font-medium mr-2 hidden sm:block">{user?.company || user?.name}</span>
                                 {user?.businessLogo ? (
                                     <img
                                         src={`${API_URL}${user.businessLogo}`}
                                         alt={user?.company}
-                                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                        className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border border-gray-200"
                                     />
                                 ) : (
-                                    <div className="w-10 h-10 bg-primary-200 rounded-full flex items-center justify-center text-primary-700 font-bold">
+                                    <div className="w-8 h-8 md:w-10 md:h-10 bg-primary-200 rounded-full flex items-center justify-center text-primary-700 font-bold text-sm md:text-base">
                                         {user?.company?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase()}
                                     </div>
                                 )}
                             </div>
                             <button
                                 onClick={logout}
-                                className="text-gray-600 hover:text-gray-900 font-medium"
+                                className="text-gray-600 hover:text-gray-900 font-medium text-sm md:text-base"
                             >
                                 Sign Out
                             </button>
@@ -115,26 +115,26 @@ const MSMEDashboard = () => {
                     <div className="bg-white rounded-lg shadow-card overflow-hidden">
                         <ul className="divide-y divide-gray-200">
                             {tasks.map(task => (
-                                <li key={task._id} className="p-6 hover:bg-gray-50 transition-colors">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-medium text-gray-900">{task.title}</h3>
-                                            <p className="text-sm text-gray-500 mt-1">
+                                <li key={task._id} className="p-4 md:p-6 hover:bg-gray-50 transition-colors">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="min-w-0">
+                                            <h3 className="text-base md:text-lg font-medium text-gray-900 truncate">{task.title}</h3>
+                                            <p className="text-xs md:text-sm text-gray-500 mt-1">
                                                 Posted on {new Date(task.createdAt).toLocaleDateString()}
                                             </p>
                                         </div>
-                                        <div className="flex items-center space-x-4">
-                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${task.status === 'open' ? 'bg-green-100 text-green-800' :
+                                        <div className="flex items-center justify-between sm:justify-end space-x-3 md:space-x-4">
+                                            <span className={`px-2 md:px-3 py-1 rounded-full text-[10px] md:text-sm font-medium ${task.status === 'open' ? 'bg-green-100 text-green-800' :
                                                 task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
                                                     'bg-gray-100 text-gray-800'
                                                 }`}>
                                                 {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                                             </span>
-                                            <div className="text-sm text-gray-500">
-                                                {task.applicants?.length || 0} Applicants
+                                            <div className="text-[10px] md:text-sm text-gray-500">
+                                                {task.applicants?.length || 0} <span className="hidden xs:inline">Applicants</span>
                                             </div>
-                                            <Link to={`/tasks/${task._id}/applicants`} className="text-primary-600 hover:text-primary-900 font-medium">
-                                                View Applicants
+                                            <Link to={`/tasks/${task._id}/applicants`} className="text-primary-600 hover:text-primary-900 font-medium text-xs md:text-sm">
+                                                View <span className="hidden sm:inline">Applicants</span>
                                             </Link>
                                         </div>
                                     </div>

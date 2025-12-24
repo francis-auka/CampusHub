@@ -99,11 +99,13 @@ const StudentDashboard = () => {
             <main className="flex-1 overflow-y-auto">
                 {/* Header */}
                 <header className="bg-white shadow-sm sticky top-0 z-10">
-                    <div className="px-8 py-4 flex justify-between items-center">
-                        <h1 className="text-2xl font-bold text-gray-900">Welcome back, {user?.name?.split(' ')[0]}!</h1>
-                        <div className="flex items-center space-x-4">
+                    <div className="px-4 md:px-8 py-4 flex justify-between items-center">
+                        <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate mr-4">
+                            Welcome back, {user?.name?.split(' ')[0]}!
+                        </h1>
+                        <div className="flex items-center space-x-3 md:space-x-4 flex-shrink-0">
                             <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
@@ -112,10 +114,10 @@ const StudentDashboard = () => {
                                 <img
                                     src={`${API_URL}${user.profilePhoto}`}
                                     alt={user?.name}
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                                    className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white shadow-sm"
                                 />
                             ) : (
-                                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm text-sm md:text-base">
                                     {user?.name?.charAt(0).toUpperCase()}
                                 </div>
                             )}
@@ -184,30 +186,31 @@ const StudentDashboard = () => {
                                 {loading ? (
                                     <div className="text-center py-8">Loading...</div>
                                 ) : applications.length > 0 ? (
-                                    <div className="bg-white rounded-lg shadow-card overflow-hidden">
+                                    <div className="responsive-table-container">
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                    <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
+                                                    <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Company</th>
+                                                    <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                    <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {applications.map(app => (
                                                     <tr key={app._id}>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                            {app.task?.title}
+                                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                            <div className="max-w-[120px] md:max-w-none truncate">{app.task?.title}</div>
+                                                            <div className="sm:hidden text-xs text-gray-500 mt-1">{app.task?.postedBy?.company}</div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                                                             {app.task?.postedBy?.company}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {new Date(app.createdAt).toLocaleDateString()}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${app.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                                                            <span className={`px-2 inline-flex text-[10px] md:text-xs leading-5 font-semibold rounded-full ${app.status === 'accepted' ? 'bg-green-100 text-green-800' :
                                                                 app.status === 'rejected' ? 'bg-red-100 text-red-800' :
                                                                     'bg-yellow-100 text-yellow-800'
                                                                 }`}>
