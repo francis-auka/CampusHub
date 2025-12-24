@@ -4,31 +4,36 @@ const notificationSchema = new mongoose.Schema({
     recipient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+    },
+    sender: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
     type: {
         type: String,
-        enum: ['info', 'success', 'warning', 'error'],
-        default: 'info'
+        enum: ['application', 'assignment', 'submission', 'feedback', 'completion', 'message'],
+        required: true,
+    },
+    task: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Task',
     },
     message: {
         type: String,
-        required: true
+        required: true,
     },
     read: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    relatedId: {
-        type: mongoose.Schema.Types.ObjectId,
-        refPath: 'onModel'
+    timestamp: {
+        type: Date,
+        default: Date.now,
     },
-    onModel: {
-        type: String,
-        enum: ['Task', 'Application', 'User']
-    }
 }, {
-    timestamps: true
+    timestamps: true,
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

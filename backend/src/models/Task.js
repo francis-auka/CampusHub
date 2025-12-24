@@ -39,11 +39,32 @@ const taskSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    assignedTo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default: null,
+    maxAssignees: {
+        type: Number,
+        default: 1,
+        min: 1,
     },
+    assigned: [{
+        student: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        status: {
+            type: String,
+            enum: ['in-progress', 'submitted', 'completed', 'revisions-requested'],
+            default: 'in-progress',
+        },
+        submission: {
+            content: String,
+            attachments: [String],
+            submittedAt: Date,
+        },
+        feedback: String,
+        assignedAt: {
+            type: Date,
+            default: Date.now,
+        },
+    }],
     status: {
         type: String,
         enum: ['open', 'in-progress', 'completed', 'cancelled'],

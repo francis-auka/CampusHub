@@ -47,7 +47,14 @@ const getTasks = async (req, res) => {
         if (status) {
             query.status = status;
         } else if (!postedBy && !assignedTo) {
-            query.status = 'open';
+            // Only show tasks that are open or in-progress but not fully assigned
+            query.$or = [
+                { status: 'open' },
+                {
+                    status: 'in-progress',
+                    $expr: { $lt: [{ $size: "$assigned" }, "$maxAssignees"] }
+                }
+            ];
         }
 
         // Filter by postedBy
@@ -296,6 +303,8 @@ const getTaskApplicants = async (req, res) => {
     }
 };
 
+const { sendNotification } = require('../utils/notificationService');
+
 // @desc    Assign task to a student
 // @route   POST /api/tasks/:id/assign
 // @access  Private (MSME - owner only)
@@ -320,7 +329,18 @@ const assignTask = async (req, res) => {
             return res.status(400).json({ message: 'Student has not applied for this task' });
         }
 
-        task.assignedTo = studentId;
+        // Check if already assigned
+        const isAlreadyAssigned = task.assigned.some(a => a.student.toString() === studentId);
+        if (isAlreadyAssigned) {
+            return res.status(400).json({ message: 'Student is already assigned to this task' });
+        }
+
+        // Check maxAssignees
+        if (task.assigned.length >= task.maxAssignees) {
+            return res.status(400).json({ message: 'Task has reached maximum number of assignees' });
+        }
+
+        task.assigned.push({ student: studentId, status: 'in-progress' });
         task.status = 'in-progress';
         await task.save();
 
@@ -330,12 +350,104 @@ const assignTask = async (req, res) => {
             { status: 'accepted' }
         );
 
+        // Send real-time notification
+        await sendNotification(
+            studentId,
+            req.user._id,
+            'assignment',
+            task._id,
+            `You have been assigned to the task: ${task.title}`
+        );
+
         res.json({
             success: true,
             data: task,
         });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// @desc    Submit work for a task
+// @route   POST /api/tasks/:id/submit
+// @access  Private (Student only)
+const submitWork = async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+
+        const assignment = task.assigned.find(a => a.student.toString() === req.user._id.toString());
+        if (!assignment) return res.status(403).json({ message: 'You are not assigned to this task' });
+
+        const { content, attachments } = req.body;
+        assignment.submission = {
+            content,
+            attachments: attachments || [],
+            submittedAt: new Date()
+        };
+        assignment.status = 'submitted';
+
+        await task.save();
+
+        // Notify MSME
+        await sendNotification(
+            task.postedBy,
+            req.user._id,
+            'submission',
+            task._id,
+            `Student ${req.user.name} has submitted work for: ${task.title}`
+        );
+
+        res.json({ success: true, data: task });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// @desc    Approve or request revision for work
+// @route   POST /api/tasks/:id/review
+// @access  Private (MSME only)
+const reviewWork = async (req, res) => {
+    try {
+        const { studentId, action, feedback } = req.body;
+        const task = await Task.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+
+        if (task.postedBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        const assignment = task.assigned.find(a => a.student.toString() === studentId);
+        if (!assignment) return res.status(404).json({ message: 'Assignment not found' });
+
+        if (action === 'approve') {
+            assignment.status = 'completed';
+            assignment.feedback = feedback;
+        } else if (action === 'revise') {
+            assignment.status = 'revisions-requested';
+            assignment.feedback = feedback;
+        }
+
+        // Check if all assigned students are completed
+        const allCompleted = task.assigned.every(a => a.status === 'completed');
+        if (allCompleted) {
+            task.status = 'completed';
+        }
+
+        await task.save();
+
+        // Notify Student
+        await sendNotification(
+            studentId,
+            req.user._id,
+            action === 'approve' ? 'completion' : 'feedback',
+            task._id,
+            action === 'approve' ? `Your work for ${task.title} has been approved!` : `Revision requested for ${task.title}`
+        );
+
+        res.json({ success: true, data: task });
+    } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
@@ -350,4 +462,6 @@ module.exports = {
     assignTask,
     getMyApplications,
     getTaskApplicants,
+    submitWork,
+    reviewWork
 };

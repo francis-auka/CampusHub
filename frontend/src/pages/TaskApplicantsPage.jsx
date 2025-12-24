@@ -10,6 +10,7 @@ const TaskApplicantsPage = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchApplicants = async () => {
@@ -71,6 +72,15 @@ const TaskApplicantsPage = () => {
 
     const { task, applications } = data;
 
+    const filteredApplicants = applications.filter(app => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            app.applicant?.name?.toLowerCase().includes(searchLower) ||
+            app.applicant?.university?.toLowerCase().includes(searchLower) ||
+            app.applicant?.skills?.some(skill => skill.toLowerCase().includes(searchLower))
+        );
+    });
+
     return (
         <div className="max-w-7xl mx-auto">
             {/* Header */}
@@ -90,6 +100,9 @@ const TaskApplicantsPage = () => {
                         {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                     </span>
                     <span className="font-semibold text-gray-900">${task.budget}</span>
+                    <span className="bg-gray-100 px-2 py-1 rounded text-xs">
+                        {task.assigned?.length || 0} / {task.maxAssignees || 1} Assigned
+                    </span>
                     {task.deadline && (
                         <span>Due: {new Date(task.deadline).toLocaleDateString()}</span>
                     )}
@@ -104,13 +117,27 @@ const TaskApplicantsPage = () => {
 
             {/* Applicants Section */}
             <div className="bg-white rounded-lg shadow-card p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-6">
-                    Applicants ({applications.length})
-                </h2>
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                        Applicants ({applications.length})
+                    </h2>
+                    <div className="relative flex-1 max-w-md">
+                        <input
+                            type="text"
+                            placeholder="Search by name, university, or skills..."
+                            className="input pl-10 text-sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </div>
 
-                {applications.length > 0 ? (
+                {filteredApplicants.length > 0 ? (
                     <div className="space-y-6">
-                        {applications.map((application) => (
+                        {filteredApplicants.map((application) => (
                             <div key={application._id} className="border border-gray-200 rounded-lg p-6 hover:border-primary-300 transition-colors">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start space-x-4 flex-1">
@@ -188,17 +215,23 @@ const TaskApplicantsPage = () => {
                                                 </p>
 
                                                 {/* Action Buttons */}
-                                                {task.status === 'open' && application.status === 'pending' && (
+                                                {application.status === 'pending' && (
                                                     <button
                                                         onClick={() => handleAssignTask(application.applicant._id)}
-                                                        disabled={assigningId === application.applicant._id}
-                                                        className="btn-primary text-sm"
+                                                        disabled={assigningId === application.applicant._id || task.assigned?.length >= (task.maxAssignees || 1)}
+                                                        className="btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
-                                                        {assigningId === application.applicant._id ? 'Assigning...' : 'Assign Task'}
+                                                        {assigningId === application.applicant._id ? 'Assigning...' :
+                                                            task.assigned?.length >= (task.maxAssignees || 1) ? 'Limit Reached' : 'Assign Task'}
                                                     </button>
                                                 )}
                                                 {application.status === 'accepted' && (
-                                                    <span className="text-sm font-medium text-green-600">✓ Task Assigned</span>
+                                                    <span className="text-sm font-medium text-green-600 flex items-center">
+                                                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                        </svg>
+                                                        Assigned
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>

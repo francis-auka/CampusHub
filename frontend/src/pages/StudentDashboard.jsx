@@ -1,59 +1,93 @@
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
-import api, { API_URL } from '../utils/api';
+import Chat from '../components/Chat';
 
 const StudentDashboard = () => {
     const { user, logout } = useContext(AuthContext);
     const [assignedTasks, setAssignedTasks] = useState([]);
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [submissionContent, setSubmissionContent] = useState('');
+    const [submitting, setSubmitting] = useState(false);
     const [stats, setStats] = useState({
         completedTasks: 0,
         totalEarnings: 0,
         activeApplications: 0
     });
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                if (user?._id) {
-                    // Fetch assigned tasks
-                    const tasksResponse = await api.get(`/tasks?assignedTo=${user._id}`);
-                    const myTasks = tasksResponse.data.data;
-                    setAssignedTasks(myTasks);
+    const fetchDashboardData = async () => {
+        try {
+            if (user?._id) {
+                // Fetch assigned tasks
+                const tasksResponse = await api.get(`/tasks?assignedTo=${user._id}`);
+                const myTasks = tasksResponse.data.data;
+                setAssignedTasks(myTasks);
 
-                    // Fetch applications
-                    const applicationsResponse = await api.get('/tasks/applications/me');
-                    const myApplications = applicationsResponse.data.data;
-                    setApplications(myApplications);
+                // Fetch applications
+                const applicationsResponse = await api.get('/tasks/applications/me');
+                const myApplications = applicationsResponse.data.data;
+                setApplications(myApplications);
 
-                    // Calculate stats
-                    const completed = myTasks.filter(t => t.status === 'completed').length;
-                    const earnings = myTasks.filter(t => t.status === 'completed').reduce((acc, t) => acc + t.budget, 0);
-                    const activeApps = myApplications.filter(a => a.status === 'pending').length;
+                // Calculate stats
+                const completed = myTasks.filter(t => {
+                    const assignment = t.assigned?.find(a => a.student === user._id || a.student?._id === user._id);
+                    return assignment?.status === 'completed';
+                }).length;
 
-                    setStats({
-                        completedTasks: completed,
-                        totalEarnings: earnings,
-                        activeApplications: activeApps
-                    });
-                }
-            } catch (error) {
-                console.error('Error fetching dashboard data:', error);
-            } finally {
-                setLoading(false);
+                const earnings = myTasks.filter(t => {
+                    const assignment = t.assigned?.find(a => a.student === user._id || a.student?._id === user._id);
+                    return assignment?.status === 'completed';
+                }).reduce((acc, t) => acc + t.budget, 0);
+
+                const activeApps = myApplications.filter(a => a.status === 'pending').length;
+
+                setStats({
+                    completedTasks: completed,
+                    totalEarnings: earnings,
+                    activeApplications: activeApps
+                });
             }
-        };
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchDashboardData();
     }, [user]);
 
+    const handleSubmitWork = async (e) => {
+        e.preventDefault();
+        if (!submissionContent.trim()) return;
 
+        try {
+            setSubmitting(true);
+            await api.post(`/tasks/${selectedTask._id}/submit`, {
+                content: submissionContent
+            });
+            alert('Work submitted successfully!');
+            setSubmissionContent('');
+            fetchDashboardData();
+            // Update selected task to show new status
+            const updatedTask = await api.get(`/tasks/${selectedTask._id}`);
+            setSelectedTask(updatedTask.data.data);
+        } catch (error) {
+            console.error('Error submitting work:', error);
+            alert(error.response?.data?.message || 'Failed to submit work');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const getAssignmentStatus = (task) => {
+        const assignment = task.assigned?.find(a => a.student === user._id || a.student?._id === user._id);
+        return assignment?.status || 'in-progress';
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
-            {/* Sidebar */}
+            {/* Sidebar (Keep existing) */}
             <aside className="w-64 bg-white shadow-card hidden lg:block">
                 <div className="p-6">
                     <Link to="/" className="text-2xl font-bold text-primary-600">Campus Hub</Link>
@@ -97,19 +131,12 @@ const StudentDashboard = () => {
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto">
-                {/* Header */}
                 <header className="bg-white shadow-sm sticky top-0 z-10">
                     <div className="px-4 md:px-8 py-4 flex justify-between items-center">
                         <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate mr-4">
                             Welcome back, {user?.name?.split(' ')[0]}!
                         </h1>
                         <div className="flex items-center space-x-3 md:space-x-4 flex-shrink-0">
-                            <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-                                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                            </button>
                             {user?.profilePhoto ? (
                                 <img
                                     src={`${API_URL}${user.profilePhoto}`}
@@ -152,26 +179,35 @@ const StudentDashboard = () => {
                                     <div className="text-center py-8">Loading...</div>
                                 ) : assignedTasks.length > 0 ? (
                                     <div className="space-y-4">
-                                        {assignedTasks.map(task => (
-                                            <div key={task._id} className="card hover:shadow-md transition-shadow cursor-pointer">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <h3 className="font-semibold text-gray-900">{task.title}</h3>
-                                                        <p className="text-sm text-gray-500 mt-1">{task.postedBy?.company}</p>
+                                        {assignedTasks.map(task => {
+                                            const status = getAssignmentStatus(task);
+                                            return (
+                                                <div
+                                                    key={task._id}
+                                                    className="card hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-primary-500"
+                                                    onClick={() => setSelectedTask(task)}
+                                                >
+                                                    <div className="flex justify-between items-start">
+                                                        <div>
+                                                            <h3 className="font-semibold text-gray-900">{task.title}</h3>
+                                                            <p className="text-sm text-gray-500 mt-1">{task.postedBy?.company}</p>
+                                                        </div>
+                                                        <span className={`badge-${status === 'completed' ? 'success' : status === 'submitted' ? 'warning' : 'primary'}`}>
+                                                            {status.replace('-', ' ')}
+                                                        </span>
                                                     </div>
-                                                    <span className="badge-primary">In Progress</span>
-                                                </div>
-                                                <div className="mt-4 flex items-center justify-between text-sm">
-                                                    <div className="flex items-center text-gray-500">
-                                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        Due {new Date(task.deadline).toLocaleDateString()}
+                                                    <div className="mt-4 flex items-center justify-between text-sm">
+                                                        <div className="flex items-center text-gray-500">
+                                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            Due {new Date(task.deadline).toLocaleDateString()}
+                                                        </div>
+                                                        <span className="font-bold text-gray-900">${task.budget}</span>
                                                     </div>
-                                                    <span className="font-bold text-gray-900">${task.budget}</span>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 ) : (
                                     <div className="card text-center py-8 text-gray-500">
@@ -180,7 +216,7 @@ const StudentDashboard = () => {
                                 )}
                             </section>
 
-                            {/* Recent Applications */}
+                            {/* Recent Applications (Keep existing) */}
                             <section>
                                 <h2 className="text-lg font-bold text-gray-900 mb-4">Recent Applications</h2>
                                 {loading ? (
@@ -230,9 +266,8 @@ const StudentDashboard = () => {
                             </section>
                         </div>
 
-                        {/* Right Column */}
+                        {/* Right Column (Keep existing) */}
                         <div className="space-y-8">
-                            {/* Profile Completeness */}
                             <div className="card">
                                 <h3 className="font-bold text-gray-900 mb-4">Profile Completeness</h3>
                                 <div className="relative pt-1">
@@ -252,24 +287,116 @@ const StudentDashboard = () => {
                                         <div style={{ width: "70%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-500"></div>
                                     </div>
                                     <p className="text-sm text-gray-500">Complete your profile to increase your chances of getting hired.</p>
-                                    <button className="mt-4 w-full btn-secondary text-sm">Update Profile</button>
-                                </div>
-                            </div>
-
-                            {/* Recommended Tasks */}
-                            <div className="card">
-                                <h3 className="font-bold text-gray-900 mb-4">Recommended for You</h3>
-                                <div className="text-center py-8 text-gray-500 text-sm">
-                                    <p>Complete your profile to get personalized recommendations.</p>
-                                    <button className="mt-2 text-primary-600 hover:text-primary-700 font-medium">
-                                        Update Skills
-                                    </button>
+                                    <Link to="/profile" className="mt-4 w-full btn-secondary text-sm block text-center">Update Profile</Link>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+
+            {/* Task Detail Modal */}
+            {selectedTask && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row">
+                        {/* Task Info & Submission */}
+                        <div className="flex-1 p-6 overflow-y-auto border-r border-gray-100">
+                            <div className="flex justify-between items-start mb-6">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-900">{selectedTask.title}</h2>
+                                    <p className="text-primary-600 font-medium">{selectedTask.postedBy?.company}</p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedTask(null)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2">Description</h4>
+                                    <p className="text-gray-600 leading-relaxed">{selectedTask.description}</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-3 bg-gray-50 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase">Budget</p>
+                                        <p className="text-lg font-bold text-gray-900">${selectedTask.budget}</p>
+                                    </div>
+                                    <div className="p-3 bg-gray-50 rounded-xl">
+                                        <p className="text-xs text-gray-500 uppercase">Deadline</p>
+                                        <p className="text-lg font-bold text-gray-900">{new Date(selectedTask.deadline).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+
+                                {/* Submission Section */}
+                                <div className="pt-6 border-t border-gray-100">
+                                    <h4 className="text-lg font-bold text-gray-900 mb-4">Submit Your Work</h4>
+                                    {getAssignmentStatus(selectedTask) === 'completed' ? (
+                                        <div className="p-4 bg-green-50 text-green-700 rounded-xl border border-green-100">
+                                            <p className="font-bold flex items-center">
+                                                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                Task Completed & Approved
+                                            </p>
+                                            {selectedTask.assigned?.find(a => a.student === user._id || a.student?._id === user._id)?.feedback && (
+                                                <p className="mt-2 text-sm italic">Feedback: "{selectedTask.assigned.find(a => a.student === user._id || a.student?._id === user._id).feedback}"</p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <form onSubmit={handleSubmitWork} className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Submission Details / Links
+                                                </label>
+                                                <textarea
+                                                    className="input min-h-[120px]"
+                                                    placeholder="Describe your work or provide links to deliverables (e.g., GitHub, Google Drive)..."
+                                                    value={submissionContent}
+                                                    onChange={(e) => setSubmissionContent(e.target.value)}
+                                                    required
+                                                ></textarea>
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                disabled={submitting}
+                                                className="btn-primary w-full py-3 flex justify-center items-center"
+                                            >
+                                                {submitting ? (
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                                ) : (
+                                                    getAssignmentStatus(selectedTask) === 'submitted' ? 'Update Submission' : 'Submit Work'
+                                                )}
+                                            </button>
+                                            {getAssignmentStatus(selectedTask) === 'submitted' && (
+                                                <p className="text-xs text-yellow-600 text-center">
+                                                    You have already submitted work. Submitting again will update your previous entry.
+                                                </p>
+                                            )}
+                                            {getAssignmentStatus(selectedTask) === 'revisions-requested' && (
+                                                <div className="p-3 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-100 text-sm">
+                                                    <p className="font-bold">Revision Requested:</p>
+                                                    <p className="italic">"{selectedTask.assigned.find(a => a.student === user._id || a.student?._id === user._id).feedback}"</p>
+                                                </div>
+                                            )}
+                                        </form>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Chat Section */}
+                        <div className="w-full md:w-[400px] bg-gray-50 flex flex-col">
+                            <Chat taskId={selectedTask._id} taskTitle={selectedTask.title} />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -8,26 +8,22 @@ import {
     Bell, LogOut, Settings, Menu, X, ChevronDown
 } from 'lucide-react';
 
+import NotificationPanel from './NotificationPanel';
+
 const Layout = ({ children }) => {
     const { user, logout } = useContext(AuthContext);
-    const { notifications, unreadCount, markAsRead, markAllAsRead } = useContext(NotificationContext);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const [isNotifOpen, setIsNotifOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const location = useLocation();
     const navigate = useNavigate();
     const profileRef = useRef(null);
-    const notifRef = useRef(null);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
                 setIsProfileOpen(false);
-            }
-            if (notifRef.current && !notifRef.current.contains(event.target)) {
-                setIsNotifOpen(false);
             }
         };
 
@@ -123,54 +119,7 @@ const Layout = ({ children }) => {
                         {/* Right Side Actions */}
                         <div className="flex items-center space-x-4">
                             {/* Notifications */}
-                            <div className="relative" ref={notifRef}>
-                                <button
-                                    onClick={() => setIsNotifOpen(!isNotifOpen)}
-                                    className="p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none relative"
-                                >
-                                    <Bell size={20} />
-                                    {unreadCount > 0 && (
-                                        <span className="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500" />
-                                    )}
-                                </button>
-
-                                {/* Notifications Dropdown */}
-                                {isNotifOpen && (
-                                    <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                                        <div className="px-4 py-2 border-b border-gray-100 flex justify-between items-center">
-                                            <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
-                                            {unreadCount > 0 && (
-                                                <button
-                                                    onClick={markAllAsRead}
-                                                    className="text-xs text-primary-600 hover:text-primary-700"
-                                                >
-                                                    Mark all read
-                                                </button>
-                                            )}
-                                        </div>
-                                        <div className="max-h-96 overflow-y-auto">
-                                            {notifications.length > 0 ? (
-                                                notifications.map((notif) => (
-                                                    <div
-                                                        key={notif._id}
-                                                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${!notif.read ? 'bg-blue-50' : ''}`}
-                                                        onClick={() => markAsRead(notif._id)}
-                                                    >
-                                                        <p className="text-sm text-gray-900">{notif.message}</p>
-                                                        <p className="text-xs text-gray-500 mt-1">
-                                                            {new Date(notif.createdAt).toLocaleDateString()}
-                                                        </p>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="px-4 py-6 text-center text-sm text-gray-500">
-                                                    No notifications
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                            <NotificationPanel />
 
                             {/* Profile Dropdown */}
                             <div className="relative" ref={profileRef}>

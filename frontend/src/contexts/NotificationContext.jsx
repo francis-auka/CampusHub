@@ -1,11 +1,13 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../utils/api';
 import { AuthContext } from './AuthContext';
+import { useSocket } from './SocketContext';
 
 export const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
     const { user } = useContext(AuthContext);
+    const socket = useSocket();
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
@@ -22,10 +24,20 @@ export const NotificationProvider = ({ children }) => {
 
     useEffect(() => {
         fetchNotifications();
-        // Poll for notifications every minute
-        const interval = setInterval(fetchNotifications, 60000);
-        return () => clearInterval(interval);
     }, [user]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('notification', (notification) => {
+            setNotifications(prev => [notification, ...prev]);
+            setUnreadCount(prev => prev + 1);
+        });
+
+        return () => {
+            socket.off('notification');
+        };
+    }, [socket]);
 
     const markAsRead = async (id) => {
         try {

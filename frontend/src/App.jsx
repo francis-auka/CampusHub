@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import ApplicationsPage from './pages/ApplicationsPage';
 import TaskApplicantsPage from './pages/TaskApplicantsPage';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { SocketProvider } from './contexts/SocketContext';
 import Layout from './components/Layout';
 
 import CreateTaskPage from './pages/CreateTaskPage';
@@ -24,27 +25,29 @@ const AuthenticatedLayout = ({ children }) => (
 function App() {
   return (
     <AuthProvider>
-      <NotificationProvider>
-        <Router>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+      <SocketProvider>
+        <NotificationProvider>
+          <Router>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-            {/* Protected Routes */}
-            <Route path="/tasks" element={<AuthenticatedLayout><TaskBrowsingPage /></AuthenticatedLayout>} />
-            <Route path="/tasks/new" element={<AuthenticatedLayout><CreateTaskPage /></AuthenticatedLayout>} />
-            <Route path="/dashboard/student" element={<AuthenticatedLayout><StudentDashboard /></AuthenticatedLayout>} />
-            <Route path="/dashboard/msme" element={<AuthenticatedLayout><MSMEDashboard /></AuthenticatedLayout>} />
-            <Route path="/my-work" element={<AuthenticatedLayout><MyWorkPage /></AuthenticatedLayout>} />
-            <Route path="/messages" element={<AuthenticatedLayout><MessagesPage /></AuthenticatedLayout>} />
-            <Route path="/profile" element={<AuthenticatedLayout><ProfilePage /></AuthenticatedLayout>} />
-            <Route path="/applications" element={<AuthenticatedLayout><ApplicationsPage /></AuthenticatedLayout>} />
-            <Route path="/tasks/:id/applicants" element={<AuthenticatedLayout><TaskApplicantsPage /></AuthenticatedLayout>} />
-          </Routes>
-        </Router>
-      </NotificationProvider>
+              {/* Protected Routes */}
+              <Route path="/tasks" element={<AuthenticatedLayout><TaskBrowsingPage /></AuthenticatedLayout>} />
+              <Route path="/tasks/new" element={<AuthenticatedLayout><CreateTaskPage /></AuthenticatedLayout>} />
+              <Route path="/dashboard/student" element={<AuthenticatedLayout><StudentDashboard /></AuthenticatedLayout>} />
+              <Route path="/dashboard/msme" element={<AuthenticatedLayout><MSMEDashboard /></AuthenticatedLayout>} />
+              <Route path="/my-work" element={<AuthenticatedLayout><MyWorkPage /></AuthenticatedLayout>} />
+              <Route path="/messages" element={<AuthenticatedLayout><MessagesPage /></AuthenticatedLayout>} />
+              <Route path="/profile" element={<AuthenticatedLayout><ProfilePage /></AuthenticatedLayout>} />
+              <Route path="/applications" element={<AuthenticatedLayout><ApplicationsPage /></AuthenticatedLayout>} />
+              <Route path="/tasks/:id/applicants" element={<AuthenticatedLayout><TaskApplicantsPage /></AuthenticatedLayout>} />
+            </Routes>
+          </Router>
+        </NotificationProvider>
+      </SocketProvider>
     </AuthProvider>
   );
 }
