@@ -60,11 +60,11 @@ const register = async (req, res) => {
 
         if (user) {
             console.log('User created successfully:', user._id);
+            const userResponse = user.toObject();
+            delete userResponse.password;
+
             res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
+                ...userResponse,
                 token: generateToken(user._id),
             });
         } else {
@@ -94,11 +94,11 @@ const login = async (req, res) => {
 
         if (user && (await user.comparePassword(password))) {
             console.log('Login successful for:', email, 'Role:', user.role);
+            const userResponse = user.toObject();
+            delete userResponse.password;
+
             res.json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
+                ...userResponse,
                 token: generateToken(user._id),
             });
         } else {
