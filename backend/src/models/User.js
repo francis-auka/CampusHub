@@ -34,14 +34,26 @@ const userSchema = new mongoose.Schema({
     course: String,
     skills: [String],
     portfolio: [String],
+    resume: String, // Path to resume file
 
     // MSME-specific fields
     company: {
         type: String,
         required: function () { return this.role === 'msme'; },
     },
+    businessDescription: String,
+    servicesOffered: [String],
+    businessLogo: String,
+    companyProfile: String, // Path to company profile/portfolio file
     businessCategory: String,
     location: String,
+    website: String,
+    socialLinks: {
+        linkedin: String,
+        twitter: String,
+        facebook: String,
+        instagram: String
+    },
 
     // Common fields
     profilePhoto: {

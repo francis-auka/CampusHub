@@ -16,7 +16,11 @@ const register = async (req, res) => {
         console.log('Register request body:', req.body);
         console.log('Register request files:', req.files);
 
-        const { name, email, password, role, university, company, bio, skills } = req.body;
+        const {
+            name, email, password, role,
+            university, course, skills, bio,
+            company, businessDescription, servicesOffered, businessCategory, location, website
+        } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -25,18 +29,31 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Create user
+        // Create user data object
         const userData = {
             name,
             email,
             password,
             role,
-            bio,
         };
 
-        // Handle skills (parse if string)
-        if (skills) {
-            userData.skills = typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : skills;
+        // Handle role-specific fields
+        if (role === 'student') {
+            userData.university = university;
+            userData.course = course;
+            userData.bio = bio;
+            if (skills) {
+                userData.skills = typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : skills;
+            }
+        } else if (role === 'msme') {
+            userData.company = company;
+            userData.businessDescription = businessDescription;
+            userData.businessCategory = businessCategory;
+            userData.location = location;
+            userData.website = website;
+            if (servicesOffered) {
+                userData.servicesOffered = typeof servicesOffered === 'string' ? servicesOffered.split(',').map(s => s.trim()) : servicesOffered;
+            }
         }
 
         // Handle file uploads
@@ -44,16 +61,15 @@ const register = async (req, res) => {
             if (req.files.profilePhoto) {
                 userData.profilePhoto = `/uploads/${req.files.profilePhoto[0].filename}`;
             }
+            if (req.files.businessLogo) {
+                userData.businessLogo = `/uploads/${req.files.businessLogo[0].filename}`;
+            }
             if (req.files.resume) {
                 userData.resume = `/uploads/${req.files.resume[0].filename}`;
             }
-        }
-
-        // Add role-specific fields
-        if (role === 'student') {
-            userData.university = university;
-        } else if (role === 'msme') {
-            userData.company = company;
+            if (req.files.companyProfile) {
+                userData.companyProfile = `/uploads/${req.files.companyProfile[0].filename}`;
+            }
         }
 
         const user = await User.create(userData);
@@ -119,18 +135,42 @@ const updateDetails = async (req, res) => {
         const fieldsToUpdate = {
             name: req.body.name,
             email: req.body.email,
-            bio: req.body.bio,
-            skills: req.body.skills,
-            university: req.body.university,
-            company: req.body.company
+            phone: req.body.phone,
         };
+
+        if (req.user.role === 'student') {
+            fieldsToUpdate.university = req.body.university;
+            fieldsToUpdate.course = req.body.course;
+            fieldsToUpdate.bio = req.body.bio;
+            if (req.body.skills) {
+                fieldsToUpdate.skills = typeof req.body.skills === 'string' ? req.body.skills.split(',').map(s => s.trim()) : req.body.skills;
+            }
+        } else if (req.user.role === 'msme') {
+            fieldsToUpdate.company = req.body.company;
+            fieldsToUpdate.businessDescription = req.body.businessDescription;
+            fieldsToUpdate.businessCategory = req.body.businessCategory;
+            fieldsToUpdate.location = req.body.location;
+            fieldsToUpdate.website = req.body.website;
+            if (req.body.servicesOffered) {
+                fieldsToUpdate.servicesOffered = typeof req.body.servicesOffered === 'string' ? req.body.servicesOffered.split(',').map(s => s.trim()) : req.body.servicesOffered;
+            }
+            if (req.body.socialLinks) {
+                fieldsToUpdate.socialLinks = typeof req.body.socialLinks === 'string' ? JSON.parse(req.body.socialLinks) : req.body.socialLinks;
+            }
+        }
 
         if (req.files) {
             if (req.files.profilePhoto) {
                 fieldsToUpdate.profilePhoto = `/uploads/${req.files.profilePhoto[0].filename}`;
             }
+            if (req.files.businessLogo) {
+                fieldsToUpdate.businessLogo = `/uploads/${req.files.businessLogo[0].filename}`;
+            }
             if (req.files.resume) {
                 fieldsToUpdate.resume = `/uploads/${req.files.resume[0].filename}`;
+            }
+            if (req.files.companyProfile) {
+                fieldsToUpdate.companyProfile = `/uploads/${req.files.companyProfile[0].filename}`;
             }
         }
 

@@ -9,14 +9,23 @@ const RegisterPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
+        // Student fields
         university: '',
-        company: '',
         bio: '',
         skills: '',
+        // MSME fields
+        company: '',
+        businessDescription: '',
+        servicesOffered: '',
+        businessCategory: 'Development',
+        location: '',
+        website: '',
     });
     const [files, setFiles] = useState({
         profilePhoto: null,
-        resume: null
+        businessLogo: null,
+        resume: null,
+        companyProfile: null
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -47,24 +56,26 @@ const RegisterPage = () => {
         data.append('email', formData.email);
         data.append('password', formData.password);
         data.append('role', role);
-        data.append('bio', formData.bio);
-        data.append('skills', formData.skills);
 
         if (role === 'student') {
             data.append('university', formData.university);
+            data.append('bio', formData.bio);
+            data.append('skills', formData.skills);
+            if (files.profilePhoto) data.append('profilePhoto', files.profilePhoto);
+            if (files.resume) data.append('resume', files.resume);
         } else {
             data.append('company', formData.company);
-        }
-
-        if (files.profilePhoto) {
-            data.append('profilePhoto', files.profilePhoto);
-        }
-        if (files.resume) {
-            data.append('resume', files.resume);
+            data.append('businessDescription', formData.businessDescription);
+            data.append('servicesOffered', formData.servicesOffered);
+            data.append('businessCategory', formData.businessCategory);
+            data.append('location', formData.location);
+            data.append('website', formData.website);
+            if (files.businessLogo) data.append('businessLogo', files.businessLogo);
+            if (files.companyProfile) data.append('companyProfile', files.companyProfile);
         }
 
         console.log('Registering user...');
-        const result = await register(data); // AuthContext register needs to handle FormData
+        const result = await register(data);
         console.log('Registration result:', result);
 
         if (result.success) {
@@ -174,47 +185,11 @@ const RegisterPage = () => {
                                 type="text"
                                 required
                                 className="input"
-                                placeholder="John Doe"
+                                placeholder={role === 'student' ? "John Doe" : "Jane Smith"}
                                 value={formData.name}
                                 onChange={handleChange}
                             />
                         </div>
-
-                        {role === 'student' && (
-                            <div>
-                                <label htmlFor="university" className="block text-sm font-medium text-gray-700 mb-2">
-                                    University
-                                </label>
-                                <input
-                                    id="university"
-                                    name="university"
-                                    type="text"
-                                    required
-                                    className="input"
-                                    placeholder="University of Example"
-                                    value={formData.university}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        )}
-
-                        {role === 'msme' && (
-                            <div>
-                                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Company Name
-                                </label>
-                                <input
-                                    id="company"
-                                    name="company"
-                                    type="text"
-                                    required
-                                    className="input"
-                                    placeholder="Your Company Ltd"
-                                    value={formData.company}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        )}
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -267,64 +242,198 @@ const RegisterPage = () => {
                             />
                         </div>
 
-                        {/* New Fields */}
-                        <div>
-                            <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
-                                Bio
-                            </label>
-                            <textarea
-                                id="bio"
-                                name="bio"
-                                rows="3"
-                                className="input"
-                                placeholder="Tell us about yourself..."
-                                value={formData.bio}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="skills" className="block text-sm font-medium text-gray-700 mb-2">
-                                Skills (comma separated)
-                            </label>
-                            <input
-                                id="skills"
-                                name="skills"
-                                type="text"
-                                className="input"
-                                placeholder="React, Node.js, Design..."
-                                value={formData.skills}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 mb-2">
-                                Profile Photo
-                            </label>
-                            <input
-                                id="profilePhoto"
-                                name="profilePhoto"
-                                type="file"
-                                accept="image/*"
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                                onChange={handleFileChange}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
-                                Resume / Portfolio (PDF, DOC)
-                            </label>
-                            <input
-                                id="resume"
-                                name="resume"
-                                type="file"
-                                accept=".pdf,.doc,.docx"
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                                onChange={handleFileChange}
-                            />
-                        </div>
+                        {/* Role Specific Fields */}
+                        {role === 'student' ? (
+                            <>
+                                <div>
+                                    <label htmlFor="university" className="block text-sm font-medium text-gray-700 mb-2">
+                                        University
+                                    </label>
+                                    <input
+                                        id="university"
+                                        name="university"
+                                        type="text"
+                                        required
+                                        className="input"
+                                        placeholder="University of Example"
+                                        value={formData.university}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Bio
+                                    </label>
+                                    <textarea
+                                        id="bio"
+                                        name="bio"
+                                        rows="3"
+                                        className="input"
+                                        placeholder="Tell us about yourself..."
+                                        value={formData.bio}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="skills" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Skills (comma separated)
+                                    </label>
+                                    <input
+                                        id="skills"
+                                        name="skills"
+                                        type="text"
+                                        className="input"
+                                        placeholder="React, Node.js, Design..."
+                                        value={formData.skills}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Profile Photo
+                                    </label>
+                                    <input
+                                        id="profilePhoto"
+                                        name="profilePhoto"
+                                        type="file"
+                                        accept="image/*"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Resume / Portfolio (PDF, DOC)
+                                    </label>
+                                    <input
+                                        id="resume"
+                                        name="resume"
+                                        type="file"
+                                        accept=".pdf,.doc,.docx"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div>
+                                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Company Name
+                                    </label>
+                                    <input
+                                        id="company"
+                                        name="company"
+                                        type="text"
+                                        required
+                                        className="input"
+                                        placeholder="Your Company Ltd"
+                                        value={formData.company}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="businessDescription" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Business Description
+                                    </label>
+                                    <textarea
+                                        id="businessDescription"
+                                        name="businessDescription"
+                                        rows="3"
+                                        className="input"
+                                        placeholder="Tell us about your business..."
+                                        value={formData.businessDescription}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="servicesOffered" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Services Offered (comma separated)
+                                    </label>
+                                    <input
+                                        id="servicesOffered"
+                                        name="servicesOffered"
+                                        type="text"
+                                        className="input"
+                                        placeholder="Web Development, SEO, Consulting..."
+                                        value={formData.servicesOffered}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="businessCategory" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Category
+                                    </label>
+                                    <select
+                                        id="businessCategory"
+                                        name="businessCategory"
+                                        className="input"
+                                        value={formData.businessCategory}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="Development">Development</option>
+                                        <option value="Design">Design</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Writing">Writing</option>
+                                        <option value="Data Entry">Data Entry</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Location
+                                    </label>
+                                    <input
+                                        id="location"
+                                        name="location"
+                                        type="text"
+                                        className="input"
+                                        placeholder="City, Country"
+                                        value={formData.location}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Website
+                                    </label>
+                                    <input
+                                        id="website"
+                                        name="website"
+                                        type="url"
+                                        className="input"
+                                        placeholder="https://example.com"
+                                        value={formData.website}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="businessLogo" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Business Logo
+                                    </label>
+                                    <input
+                                        id="businessLogo"
+                                        name="businessLogo"
+                                        type="file"
+                                        accept="image/*"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="companyProfile" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Company Profile / Portfolio (PDF)
+                                    </label>
+                                    <input
+                                        id="companyProfile"
+                                        name="companyProfile"
+                                        type="file"
+                                        accept=".pdf"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                            </>
+                        )}
 
                         <div className="flex items-start">
                             <input

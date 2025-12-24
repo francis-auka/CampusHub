@@ -61,7 +61,7 @@ const getTasks = async (req, res) => {
         }
 
         const tasks = await Task.find(query)
-            .populate('postedBy', 'name company email profilePhoto')
+            .populate('postedBy', 'name company email profilePhoto businessLogo businessDescription businessCategory location')
             .sort({ createdAt: -1 });
 
         res.json({
@@ -104,9 +104,9 @@ const getMyApplications = async (req, res) => {
 const getTask = async (req, res) => {
     try {
         const task = await Task.findById(req.params.id)
-            .populate('postedBy', 'name company email profilePhoto businessCategory location')
-            .populate('assignedTo', 'name email profilePhoto university skills')
-            .populate('applicants', 'name email profilePhoto university skills');
+            .populate('postedBy', 'name company email profilePhoto businessLogo businessDescription businessCategory location website socialLinks')
+            .populate('assignedTo', 'name email profilePhoto university skills bio resume')
+            .populate('applicants', 'name email profilePhoto university skills bio resume');
 
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
