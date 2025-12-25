@@ -1,19 +1,19 @@
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AuthContext } from '../contexts/AuthContext';
+import PageWrapper from '../components/PageWrapper';
 
 const RegisterPage = () => {
-    const [role, setRole] = useState('student'); // 'student' or 'msme'
+    const [role, setRole] = useState('student');
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
-        // Student fields
         university: '',
         bio: '',
         skills: '',
-        // MSME fields
         company: '',
         businessDescription: '',
         servicesOffered: '',
@@ -37,13 +37,11 @@ const RegisterPage = () => {
         e.preventDefault();
         setError('');
 
-        // Validate passwords match
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
-        // Validate password length
         if (formData.password.length < 6) {
             setError('Password must be at least 6 characters');
             return;
@@ -74,20 +72,15 @@ const RegisterPage = () => {
             if (files.companyProfile) data.append('companyProfile', files.companyProfile);
         }
 
-        console.log('Registering user...');
         const result = await register(data);
-        console.log('Registration result:', result);
 
         if (result.success) {
-            console.log('User role:', result.user.role);
-            // Redirect based on role
             if (result.user.role === 'student') {
                 navigate('/dashboard/student');
             } else {
                 navigate('/dashboard/msme');
             }
         } else {
-            console.error('Registration failed:', result.message);
             setError(result.message);
         }
 
@@ -109,28 +102,37 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <PageWrapper className="bg-dark-darker py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md mx-auto">
                 {/* Logo */}
-                <div className="text-center mb-8">
-                    <Link to="/" className="inline-flex items-center gap-2">
-                        <img src="/logo.png" alt="Campus Hub Logo" className="h-12 w-auto" />
-                        <h1 className="text-3xl font-bold text-primary-600">Campus Hub</h1>
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center mb-8"
+                >
+                    <Link to="/" className="inline-flex flex-col items-center gap-4">
+                        <img src="/campus-hub-logo.png" alt="Campus Hub Logo" className="h-20 w-auto" />
+                        <h1 className="text-3xl font-bold text-white">Campus<span className="text-primary-400">Hub</span></h1>
                     </Link>
-                    <h2 className="mt-6 text-2xl font-bold text-gray-900">
+                    <h2 className="mt-6 text-2xl font-bold text-white">
                         Create your account
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-slate-400">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
+                        <Link to="/login" className="font-medium text-primary-400 hover:text-primary-300 transition-colors">
                             Sign in
                         </Link>
                     </p>
-                </div>
+                </motion.div>
 
                 {/* Role Selection */}
-                <div className="bg-white rounded-lg shadow-card p-6 mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="card mb-6"
+                >
+                    <label className="block text-sm font-medium text-slate-300 mb-3">
                         I am a...
                     </label>
                     <div className="grid grid-cols-2 gap-4">
@@ -138,8 +140,8 @@ const RegisterPage = () => {
                             type="button"
                             onClick={() => setRole('student')}
                             className={`p-4 rounded-lg border-2 transition-all ${role === 'student'
-                                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                : 'border-gray-200 hover:border-gray-300'
+                                ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                                : 'border-white/10 hover:border-white/20 text-slate-400'
                                 }`}
                         >
                             <div className="text-center">
@@ -153,8 +155,8 @@ const RegisterPage = () => {
                             type="button"
                             onClick={() => setRole('msme')}
                             className={`p-4 rounded-lg border-2 transition-all ${role === 'msme'
-                                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                : 'border-gray-200 hover:border-gray-300'
+                                ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                                : 'border-white/10 hover:border-white/20 text-slate-400'
                                 }`}
                         >
                             <div className="text-center">
@@ -165,18 +167,27 @@ const RegisterPage = () => {
                             </div>
                         </button>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Registration Form */}
-                <div className="bg-white rounded-lg shadow-card p-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="card"
+                >
                     {error && (
-                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg"
+                        >
                             {error}
-                        </div>
+                        </motion.div>
                     )}
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
                                 {role === 'student' ? 'Full Name' : 'Contact Name'}
                             </label>
                             <input
@@ -192,7 +203,7 @@ const RegisterPage = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
                                 Email address
                             </label>
                             <input
@@ -209,7 +220,7 @@ const RegisterPage = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
                                 Password
                             </label>
                             <input
@@ -226,7 +237,7 @@ const RegisterPage = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
                                 Confirm Password
                             </label>
                             <input
@@ -246,7 +257,7 @@ const RegisterPage = () => {
                         {role === 'student' ? (
                             <>
                                 <div>
-                                    <label htmlFor="university" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="university" className="block text-sm font-medium text-slate-300 mb-2">
                                         University
                                     </label>
                                     <input
@@ -261,7 +272,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="bio" className="block text-sm font-medium text-slate-300 mb-2">
                                         Bio
                                     </label>
                                     <textarea
@@ -275,7 +286,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="skills" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="skills" className="block text-sm font-medium text-slate-300 mb-2">
                                         Skills (comma separated)
                                     </label>
                                     <input
@@ -289,7 +300,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="profilePhoto" className="block text-sm font-medium text-slate-300 mb-2">
                                         Profile Photo
                                     </label>
                                     <input
@@ -297,12 +308,12 @@ const RegisterPage = () => {
                                         name="profilePhoto"
                                         type="file"
                                         accept="image/*"
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
                                         onChange={handleFileChange}
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="resume" className="block text-sm font-medium text-slate-300 mb-2">
                                         Resume / Portfolio (PDF, DOC)
                                     </label>
                                     <input
@@ -310,7 +321,7 @@ const RegisterPage = () => {
                                         name="resume"
                                         type="file"
                                         accept=".pdf,.doc,.docx"
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
                                         onChange={handleFileChange}
                                     />
                                 </div>
@@ -318,7 +329,7 @@ const RegisterPage = () => {
                         ) : (
                             <>
                                 <div>
-                                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="company" className="block text-sm font-medium text-slate-300 mb-2">
                                         Company Name
                                     </label>
                                     <input
@@ -333,7 +344,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="businessDescription" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="businessDescription" className="block text-sm font-medium text-slate-300 mb-2">
                                         Business Description
                                     </label>
                                     <textarea
@@ -347,7 +358,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="servicesOffered" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="servicesOffered" className="block text-sm font-medium text-slate-300 mb-2">
                                         Services Offered (comma separated)
                                     </label>
                                     <input
@@ -361,7 +372,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="businessCategory" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="businessCategory" className="block text-sm font-medium text-slate-300 mb-2">
                                         Category
                                     </label>
                                     <select
@@ -379,7 +390,7 @@ const RegisterPage = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="location" className="block text-sm font-medium text-slate-300 mb-2">
                                         Location
                                     </label>
                                     <input
@@ -393,7 +404,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="website" className="block text-sm font-medium text-slate-300 mb-2">
                                         Website
                                     </label>
                                     <input
@@ -407,7 +418,7 @@ const RegisterPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="businessLogo" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="businessLogo" className="block text-sm font-medium text-slate-300 mb-2">
                                         Business Logo
                                     </label>
                                     <input
@@ -415,12 +426,12 @@ const RegisterPage = () => {
                                         name="businessLogo"
                                         type="file"
                                         accept="image/*"
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
                                         onChange={handleFileChange}
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="companyProfile" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="companyProfile" className="block text-sm font-medium text-slate-300 mb-2">
                                         Company Profile / Portfolio (PDF)
                                     </label>
                                     <input
@@ -428,7 +439,7 @@ const RegisterPage = () => {
                                         name="companyProfile"
                                         type="file"
                                         accept=".pdf"
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                                        className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
                                         onChange={handleFileChange}
                                     />
                                 </div>
@@ -441,15 +452,15 @@ const RegisterPage = () => {
                                 name="terms"
                                 type="checkbox"
                                 required
-                                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-1"
+                                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-white/10 rounded bg-dark-lighter mt-1"
                             />
-                            <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+                            <label htmlFor="terms" className="ml-2 block text-sm text-slate-400">
                                 I agree to the{' '}
-                                <a href="#" className="text-primary-600 hover:text-primary-500">
+                                <a href="#" className="text-primary-400 hover:text-primary-300">
                                     Terms and Conditions
                                 </a>{' '}
                                 and{' '}
-                                <a href="#" className="text-primary-600 hover:text-primary-500">
+                                <a href="#" className="text-primary-400 hover:text-primary-300">
                                     Privacy Policy
                                 </a>
                             </label>
@@ -459,9 +470,9 @@ const RegisterPage = () => {
                             {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
                     </form>
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </PageWrapper>
     );
 };
 
