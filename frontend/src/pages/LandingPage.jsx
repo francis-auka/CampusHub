@@ -1,91 +1,107 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
-import AnimatedBackground from '../components/AnimatedBackground';
+import { Menu, X, Rocket, Target, Zap, Users, Briefcase, Award, ChevronRight, Star } from 'lucide-react';
 
 const LandingPage = () => {
+    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const fadeInUp = {
         initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.5 }
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6 }
     };
 
     const staggerContainer = {
-        animate: {
+        initial: {},
+        whileInView: {
             transition: {
                 staggerChildren: 0.1
             }
-        }
+        },
+        viewport: { once: true }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 overflow-x-hidden relative">
-            {/* Hero Background Image with Overlay */}
-            <div className="absolute inset-0 z-0 h-[500px] md:h-[700px]">
-                <img
-                    src="/hero-bg.png"
-                    alt="Campus Hub Background"
-                    className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-gray-50"></div>
+        <div className="min-h-screen bg-dark-darker text-slate-200 selection:bg-primary-500/30 selection:text-primary-200">
+            {/* Background Effects */}
+            <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-600/20 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-600/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
             </div>
 
             {/* Header */}
             <motion.header
-                initial={{ y: -100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm"
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'py-3 glass-dark' : 'py-5 bg-transparent'
+                    }`}
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                            <img src="/logo.png" alt="Campus Hub Logo" className="h-8 md:h-10 w-auto" />
-                            <span className="ml-2 text-xl md:text-2xl font-bold text-primary-600">Campus Hub</span>
+                <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                    <Link to="/" className="flex items-center gap-2 group">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
+                            <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain brightness-0 invert" />
                         </div>
+                        <span className="text-2xl font-bold tracking-tight text-white">Campus<span className="text-primary-400">Hub</span></span>
+                    </Link>
 
-                        {/* Desktop Nav */}
-                        <nav className="hidden md:flex space-x-8">
-                            <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Features</a>
-                            <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">How It Works</a>
-                            <a href="#about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
-                        </nav>
+                    <nav className="hidden md:flex items-center gap-8">
+                        {['Features', 'How It Works', 'About'].map((item) => (
+                            <a
+                                key={item}
+                                href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                className="text-sm font-medium text-slate-400 hover:text-white transition-colors relative group"
+                            >
+                                {item}
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 transition-all group-hover:w-full" />
+                            </a>
+                        ))}
+                    </nav>
 
-                        <div className="hidden md:flex items-center space-x-4">
-                            <Link to="/login" className="btn-ghost py-2 px-4">Sign In</Link>
-                            <Link to="/register" className="btn-primary py-2 px-6">Get Started</Link>
-                        </div>
-
-                        {/* Mobile Menu Button */}
-                        <button
-                            className="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        >
-                            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-                        </button>
+                    <div className="hidden md:flex items-center gap-4">
+                        <Link to="/login" className="btn-ghost text-sm">Sign In</Link>
+                        <Link to="/register" className="btn-primary text-sm px-8">Get Started</Link>
                     </div>
+
+                    <button
+                        className="md:hidden p-2 text-slate-400 hover:text-white"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X /> : <Menu />}
+                    </button>
                 </div>
 
-                {/* Mobile Navigation Menu */}
+                {/* Mobile Menu */}
                 <AnimatePresence>
                     {isMobileMenuOpen && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="md:hidden bg-white border-b border-gray-100 overflow-hidden"
+                            className="md:hidden glass-dark border-t border-white/5 overflow-hidden"
                         >
-                            <div className="px-4 pt-2 pb-6 space-y-2">
-                                <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-4 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg">Features</a>
-                                <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-4 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg">How It Works</a>
-                                <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-4 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg">About</a>
-                                <div className="pt-4 flex flex-col gap-3">
-                                    <Link to="/login" className="btn-ghost w-full text-center py-3">Sign In</Link>
-                                    <Link to="/register" className="btn-primary w-full text-center py-3">Get Started</Link>
-                                </div>
+                            <div className="p-6 flex flex-col gap-4">
+                                {['Features', 'How It Works', 'About'].map((item) => (
+                                    <a
+                                        key={item}
+                                        href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="text-lg font-medium text-slate-300"
+                                    >
+                                        {item}
+                                    </a>
+                                ))}
+                                <hr className="border-white/5" />
+                                <Link to="/login" className="btn-ghost w-full text-center">Sign In</Link>
+                                <Link to="/register" className="btn-primary w-full text-center">Get Started</Link>
                             </div>
                         </motion.div>
                     )}
@@ -93,291 +109,273 @@ const LandingPage = () => {
             </motion.header>
 
             {/* Hero Section */}
-            <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-32">
-                <div className="text-center">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-4xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg leading-tight"
-                    >
-                        Campus Hub: <br className="md:hidden" />
-                        <span className="text-primary-400">Student Freelance Marketplace</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-lg md:text-2xl text-gray-100 mb-10 max-w-3xl mx-auto drop-shadow-md px-4"
-                    >
-                        Connect students with MSMEs for tasks, internships, and real-world experience.
-                        Build your portfolio while earning and gaining valuable skills.
-                    </motion.p>
+            <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <div className="text-center max-w-4xl mx-auto">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-8"
+                        >
+                            <Star size={14} className="fill-primary-400" />
+                            <span>The #1 Student Freelance Marketplace</span>
+                        </motion.div>
+
+                        <motion.h1
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="text-5xl md:text-8xl font-black tracking-tight text-white mb-8 leading-[1.1]"
+                        >
+                            Ready to Build Your <br />
+                            <span className="text-gradient">Hype?</span>
+                        </motion.h1>
+
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed"
+                        >
+                            Connect students with MSMEs for tasks, internships, and real-world experience.
+                            Build your portfolio while earning and gaining valuable skills.
+                        </motion.p>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                            className="flex flex-col sm:flex-row justify-center gap-4"
+                        >
+                            <Link to="/register" className="btn-primary text-lg px-10 py-4 group">
+                                Hire a Student
+                                <ChevronRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                            <Link to="/tasks" className="btn-secondary text-lg px-10 py-4">
+                                Find Work
+                            </Link>
+                        </motion.div>
+                    </div>
+
+                    {/* Stats */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 px-4"
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="whileInView"
+                        className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8"
                     >
-                        <Link to="/register" className="btn-primary text-lg px-10 py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
-                            Hire a Student
-                        </Link>
-                        <Link to="/tasks" className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 text-lg px-10 py-4 rounded-lg font-bold hover:bg-white/20 hover:border-white transition-all shadow-lg">
-                            Find Work
-                        </Link>
+                        {[
+                            { label: 'Active Students', value: '10k+', icon: Users },
+                            { label: 'MSMEs Joined', value: '500+', icon: Briefcase },
+                            { label: 'Tasks Completed', value: '25k+', icon: Zap },
+                            { label: 'Success Rate', value: '98%', icon: Award },
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={i}
+                                variants={fadeInUp}
+                                className="card group hover:bg-primary-500/5"
+                            >
+                                <div className="w-12 h-12 rounded-lg bg-primary-500/10 flex items-center justify-center text-primary-400 mb-4 group-hover:scale-110 transition-transform">
+                                    <stat.icon size={24} />
+                                </div>
+                                <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+                                <div className="text-sm text-slate-500">{stat.label}</div>
+                            </motion.div>
+                        ))}
                     </motion.div>
                 </div>
 
-                {/* Stats */}
-                <motion.div
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true }}
-                    variants={staggerContainer}
-                    className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8"
-                >
-                    {[
-                        { number: "1000+", label: "Active Students" },
-                        { number: "500+", label: "MSMEs" },
-                        { number: "2000+", label: "Tasks Completed" }
-                    ].map((stat, index) => (
-                        <motion.div
-                            key={index}
-                            variants={fadeInUp}
-                            className="text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-                        >
-                            <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-1 md:mb-2">{stat.number}</div>
-                            <div className="text-gray-600 font-medium text-sm md:text-base">{stat.label}</div>
-                        </motion.div>
-                    ))}
-                </motion.div>
+                {/* Hero Decoration */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none z-0 opacity-30">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0%,transparent_70%)]" />
+                </div>
             </section>
 
             {/* Features Section */}
-            <section id="features" className="bg-white py-20 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full bg-primary-50 opacity-30 skew-y-3 transform origin-top-left -z-10"></div>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="text-4xl font-bold text-center text-gray-900 mb-12"
-                    >
-                        Why Choose Campus Hub?
-                    </motion.h2>
-                    <motion.div
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                    >
-                        {/* Feature 1 */}
-                        <motion.div variants={fadeInUp} className="card text-center hover:shadow-xl transition-all duration-300 border-t-4 border-primary-500">
-                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Browse Tasks</h3>
-                            <p className="text-gray-600">
-                                Discover micro tasks, projects, internships, and attachments tailored to your skills and interests.
-                            </p>
-                        </motion.div>
+            <section id="features" className="py-24 relative">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-20">
+                        <motion.h2
+                            variants={fadeInUp}
+                            className="text-3xl md:text-5xl font-bold text-white mb-6"
+                        >
+                            Make the Hub <span className="text-primary-400">Work for You</span>
+                        </motion.h2>
+                        <motion.p
+                            variants={fadeInUp}
+                            className="text-slate-400 max-w-2xl mx-auto"
+                        >
+                            Everything you need to kickstart your career or grow your business in one place.
+                        </motion.p>
+                    </div>
 
-                        {/* Feature 2 */}
-                        <motion.div variants={fadeInUp} className="card text-center hover:shadow-xl transition-all duration-300 border-t-4 border-primary-500">
-                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Build Portfolio</h3>
-                            <p className="text-gray-600">
-                                Showcase your completed work and build a professional portfolio that stands out to employers.
-                            </p>
-                        </motion.div>
-
-                        {/* Feature 3 */}
-                        <motion.div variants={fadeInUp} className="card text-center hover:shadow-xl transition-all duration-300 border-t-4 border-primary-500">
-                            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Gain Experience</h3>
-                            <p className="text-gray-600">
-                                Get real-world experience working with businesses while earning money and developing your skills.
-                            </p>
-                        </motion.div>
-                    </motion.div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: 'Browse Tasks',
+                                desc: 'Discover micro tasks, projects, and internships tailored to your skills.',
+                                icon: Rocket,
+                                color: 'from-blue-500 to-cyan-500'
+                            },
+                            {
+                                title: 'Build Portfolio',
+                                desc: 'Showcase your work and build a professional profile that stands out.',
+                                icon: Target,
+                                color: 'from-purple-500 to-pink-500'
+                            },
+                            {
+                                title: 'Gain Experience',
+                                desc: 'Get real-world experience working with businesses while earning.',
+                                icon: Zap,
+                                color: 'from-orange-500 to-yellow-500'
+                            }
+                        ].map((feature, i) => (
+                            <motion.div
+                                key={i}
+                                variants={fadeInUp}
+                                className="card group"
+                            >
+                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} p-0.5 mb-6 group-hover:rotate-6 transition-transform`}>
+                                    <div className="w-full h-full bg-dark-darker rounded-[14px] flex items-center justify-center text-white">
+                                        <feature.icon size={28} />
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
+                                <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
             {/* How It Works */}
-            <section id="how-it-works" className="py-20 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="text-4xl font-bold text-center text-gray-900 mb-12"
-                    >
-                        How It Works
-                    </motion.h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        {/* For Students */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8 }}
-                            className="card hover:shadow-lg transition-shadow"
-                        >
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">For Students</h3>
-                            <ol className="space-y-6">
+            <section id="how-it-works" className="py-24 bg-white/[0.02]">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                        <div>
+                            <motion.h2
+                                variants={fadeInUp}
+                                className="text-3xl md:text-5xl font-bold text-white mb-8"
+                            >
+                                Our Hub is Our <br />
+                                <span className="text-gradient">Superpower</span>
+                            </motion.h2>
+                            <div className="space-y-8">
                                 {[
-                                    { title: "Create Your Profile", desc: "Sign up and showcase your skills, education, and interests." },
-                                    { title: "Browse & Apply", desc: "Find tasks that match your skills and apply with confidence." },
-                                    { title: "Get Assigned & Deliver", desc: "Work on assigned tasks and build your portfolio." }
-                                ].map((step, idx) => (
-                                    <li key={idx} className="flex items-start group">
-                                        <span className="flex-shrink-0 w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center font-bold mr-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">{idx + 1}</span>
-                                        <div>
-                                            <h4 className="font-semibold text-gray-900 text-lg group-hover:text-primary-600 transition-colors">{step.title}</h4>
-                                            <p className="text-gray-600">{step.desc}</p>
+                                    { title: 'Create Your Profile', desc: 'Sign up and showcase your skills, education, and interests.' },
+                                    { title: 'Browse & Apply', desc: 'Find tasks that match your skills and apply with confidence.' },
+                                    { title: 'Get Assigned & Deliver', desc: 'Work on assigned tasks and build your portfolio.' }
+                                ].map((step, i) => (
+                                    <motion.div
+                                        key={i}
+                                        variants={fadeInUp}
+                                        className="flex gap-6 group"
+                                    >
+                                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400 font-bold group-hover:bg-primary-500 group-hover:text-white transition-all">
+                                            {i + 1}
                                         </div>
-                                    </li>
+                                        <div>
+                                            <h4 className="text-xl font-bold text-white mb-2">{step.title}</h4>
+                                            <p className="text-slate-400">{step.desc}</p>
+                                        </div>
+                                    </motion.div>
                                 ))}
-                            </ol>
-                        </motion.div>
-
-                        {/* For MSMEs */}
+                            </div>
+                        </div>
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8 }}
-                            className="card hover:shadow-lg transition-shadow"
+                            className="relative"
                         >
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">For MSMEs</h3>
-                            <ol className="space-y-6">
-                                {[
-                                    { title: "Post Your Task", desc: "Describe your project, budget, and required skills." },
-                                    { title: "Review Applicants", desc: "Browse student profiles and select the best fit." },
-                                    { title: "Assign & Collaborate", desc: "Work together to complete the task successfully." }
-                                ].map((step, idx) => (
-                                    <li key={idx} className="flex items-start group">
-                                        <span className="flex-shrink-0 w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center font-bold mr-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">{idx + 1}</span>
-                                        <div>
-                                            <h4 className="font-semibold text-gray-900 text-lg group-hover:text-primary-600 transition-colors">{step.title}</h4>
-                                            <p className="text-gray-600">{step.desc}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ol>
+                            <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center overflow-hidden group">
+                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 group-hover:scale-110 transition-transform duration-700" />
+                                <div className="relative z-10 text-center p-12">
+                                    <div className="text-6xl font-black text-white/10 mb-4">MAGIC</div>
+                                    <div className="text-2xl font-bold text-white">HUB.D</div>
+                                    <div className="text-primary-400 mt-2">Join Now</div>
+                                </div>
+                            </div>
+                            {/* Decorative elements */}
+                            <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent-500/30 rounded-full blur-2xl animate-pulse" />
+                            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary-500/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
                         </motion.div>
                     </div>
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="bg-primary-600 py-20 relative overflow-hidden">
-                <motion.div
-                    animate={{
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{ duration: 20, repeat: Infinity }}
-                    className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"
-                />
-                <motion.div
-                    animate={{
-                        scale: [1, 1.5, 1],
-                        rotate: [0, -10, 10, 0]
-                    }}
-                    transition={{ duration: 25, repeat: Infinity }}
-                    className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"
-                />
-
-                <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
-                    <motion.h2
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="text-3xl md:text-5xl font-bold text-white mb-6"
-                    >
-                        Ready to Get Started?
-                    </motion.h2>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="text-xl text-primary-100 mb-10"
-                    >
-                        Join thousands of students and businesses already using Campus Hub
-                    </motion.p>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
-                        className="flex flex-col sm:flex-row justify-center gap-4"
-                    >
-                        <Link to="/register" className="bg-white text-primary-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            Sign Up as Student
-                        </Link>
-                        <Link to="/register" className="bg-primary-700 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-800 transition-all border-2 border-white/30 hover:border-white shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            Sign Up as MSME
-                        </Link>
-                    </motion.div>
+            <section className="py-24 relative overflow-hidden">
+                <div className="max-w-5xl mx-auto px-6 relative z-10">
+                    <div className="glass-dark rounded-[40px] p-12 md:p-20 text-center border border-white/10 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary-600/10 to-accent-600/10 -z-10" />
+                        <motion.h2
+                            variants={fadeInUp}
+                            className="text-4xl md:text-6xl font-bold text-white mb-8"
+                        >
+                            The Final Peer <br />
+                            <span className="text-gradient">Campus Hub</span>
+                        </motion.h2>
+                        <motion.p
+                            variants={fadeInUp}
+                            className="text-slate-400 text-lg mb-12 max-w-2xl mx-auto"
+                        >
+                            Join thousands of students and businesses already using Campus Hub to bridge the gap between education and industry.
+                        </motion.p>
+                        <motion.div
+                            variants={fadeInUp}
+                            className="flex flex-col sm:flex-row justify-center gap-6"
+                        >
+                            <Link to="/register" className="btn-primary text-lg px-12 py-4">
+                                Sign Up as Student
+                            </Link>
+                            <Link to="/register" className="btn-secondary text-lg px-12 py-4">
+                                Sign Up as MSME
+                            </Link>
+                        </motion.div>
+                    </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-gray-300 py-12 border-t border-gray-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        <div>
-                            <h3 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
-                                <img src="/logo.png" alt="Campus Hub Logo" className="h-8 w-auto" />
-                                Campus Hub
-                            </h3>
-                            <p className="text-sm text-gray-400">
-                                Connecting students with opportunities to learn, earn, and grow.
+            <footer className="py-20 border-t border-white/5">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                        <div className="col-span-1 md:col-span-1">
+                            <Link to="/" className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
+                                    <img src="/logo.png" alt="Logo" className="w-5 h-5 brightness-0 invert" />
+                                </div>
+                                <span className="text-xl font-bold text-white">CampusHub</span>
+                            </Link>
+                            <p className="text-slate-500 text-sm leading-relaxed">
+                                Empowering the next generation of professionals through real-world opportunities and collaboration.
                             </p>
                         </div>
-                        <div>
-                            <h4 className="text-white font-semibold mb-4">For Students</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Browse Tasks</a></li>
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">How It Works</a></li>
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Success Stories</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-semibold mb-4">For MSMEs</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Post a Task</a></li>
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Pricing</a></li>
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Find Talent</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-semibold mb-4">Company</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">About Us</a></li>
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Contact</a></li>
-                                <li><a href="#" className="hover:text-primary-400 transition-colors">Privacy Policy</a></li>
-                            </ul>
-                        </div>
+                        {[
+                            { title: 'For Students', links: ['Browse Tasks', 'How It Works', 'Success Stories'] },
+                            { title: 'For MSMEs', links: ['Post a Task', 'Pricing', 'Find Talent'] },
+                            { title: 'Company', links: ['About Us', 'Contact', 'Privacy Policy'] }
+                        ].map((col, i) => (
+                            <div key={i}>
+                                <h4 className="text-white font-bold mb-6">{col.title}</h4>
+                                <ul className="space-y-4">
+                                    {col.links.map((link) => (
+                                        <li key={link}>
+                                            <a href="#" className="text-slate-500 hover:text-primary-400 transition-colors text-sm">{link}</a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
                     </div>
-                    <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-gray-500">
-                        <p>&copy; 2025 Campus Hub. All rights reserved.</p>
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
+                        <p>© 2025 Campus Hub. All rights reserved.</p>
+                        <div className="flex gap-8">
+                            <a href="#" className="hover:text-white transition-colors">Twitter</a>
+                            <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
+                            <a href="#" className="hover:text-white transition-colors">Instagram</a>
+                        </div>
                     </div>
                 </div>
             </footer>
