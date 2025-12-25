@@ -8,37 +8,47 @@
   * {
     @apply box-border;
   }
-  
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply m-0 font-sans text-slate-200 bg-dark-darker;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply text-white;
   }
 }
 
 @layer components {
+
   /* Button Components */
   .btn-primary {
     @apply bg-gradient-to-r from-primary-600 to-accent-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
+
   .btn-secondary {
     @apply bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full font-semibold border border-white/20 transition-all duration-300 hover:bg-white/20 hover:border-white/40;
   }
-  
+
   .btn-ghost {
     @apply bg-transparent text-slate-400 px-6 py-3 rounded-full font-medium transition-all duration-200 hover:text-white hover:bg-white/5;
   }
-  
+
   /* Card Components */
   .card {
     @apply bg-dark-lighter/40 backdrop-blur-xl rounded-card p-6 border border-white/10 shadow-xl transition-all duration-300 hover:border-primary-500/50 hover:shadow-primary-500/10;
   }
-  
+
   .glass {
     @apply bg-white/5 backdrop-blur-lg border border-white/10;
   }
@@ -51,14 +61,19 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-500 to-primary-400 animate-gradient;
   }
-  
+
   /* Input Components */
   .input {
     @apply w-full px-4 py-3 bg-dark-lighter/50 border border-white/10 rounded-xl text-sm text-white transition-all duration-200 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 placeholder:text-slate-500;
   }
-  
+
   /* Tag/Badge Components */
   .tag {
     @apply inline-flex items-center px-3 py-1 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-full text-xs font-medium;
+  }
+
+  /* Page Transition */
+  .page-transition {
+    @apply animate-in fade-in duration-300;
   }
 }

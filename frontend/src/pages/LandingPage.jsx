@@ -112,14 +112,7 @@ const LandingPage = () => {
             <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
                     <div className="text-center max-w-4xl mx-auto">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-8"
-                        >
-                            <Star size={14} className="fill-primary-400" />
-                            <span>The #1 Student Freelance Marketplace</span>
-                        </motion.div>
+
 
                         <motion.h1
                             initial={{ opacity: 0, y: 30 }}
@@ -286,16 +279,42 @@ const LandingPage = () => {
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="relative"
+                            transition={{ duration: 0.8 }}
+                            className="relative group"
                         >
-                            <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-white/10 flex items-center justify-center overflow-hidden group">
-                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 group-hover:scale-110 transition-transform duration-700" />
-                                <div className="relative z-10 text-center p-12">
-                                    <div className="text-6xl font-black text-white/10 mb-4">MAGIC</div>
-                                    <div className="text-2xl font-bold text-white">HUB.D</div>
-                                    <div className="text-primary-400 mt-2">Join Now</div>
+                            <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-white/10 overflow-hidden relative">
+                                {/* Background Image with proper hover */}
+                                <motion.div
+                                    className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80')] bg-cover bg-center"
+                                    initial={{ scale: 1, opacity: 0.2 }}
+                                    whileHover={{ scale: 1.1, opacity: 0.3 }}
+                                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                />
+
+                                {/* Content Overlay */}
+                                <div className="relative z-10 h-full flex flex-col items-center justify-center p-12">
+                                    <motion.div
+                                        className="text-6xl font-black text-white/10 mb-4"
+                                        whileHover={{ scale: 1.05 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        CAMPUS
+                                    </motion.div>
+                                    <div className="text-2xl font-bold text-white mb-6">HUB</div>
+
+                                    {/* Properly styled Join Now button */}
+                                    <Link
+                                        to="/register"
+                                        className="btn-primary px-8 py-3 text-base group/btn relative overflow-hidden"
+                                    >
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            Join Now
+                                            <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                                        </span>
+                                    </Link>
                                 </div>
                             </div>
+
                             {/* Decorative elements */}
                             <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent-500/30 rounded-full blur-2xl animate-pulse" />
                             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary-500/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
